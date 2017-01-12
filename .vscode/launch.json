@@ -1,0 +1,15 @@
+{
+    // Configuration file for VSCode Node.js debugging
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Program",
+            "program": "${workspaceRoot}\\source\\Main.ts",
+            "outFiles": ["${workspaceRoot}\\build\\*.js"],
+            "cwd": "${workspaceRoot}",
+            "sourceMaps": true
+        }
+    ]
+}

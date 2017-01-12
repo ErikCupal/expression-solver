@@ -1,0 +1,15 @@
+{
+  "name": "expression-solver",
+  "version": "1.0.0",
+  "description": "A little set of functions for solving mathematical expressions.",
+  "main": "./build/Index.js",
+  "scripts": {
+    "run": "node ./build/Index.js"
+  },
+  "author": "Erik Cupal",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^7.0.0",
+    "typescript": "^2.2.0-dev.20170111"
+  }
+}

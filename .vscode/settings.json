@@ -1,0 +1,15 @@
+{
+    // Make these files and folders invisible for the editor
+    // The purpose is not to be disturbed by irrelevant files
+    "files.exclude": {
+        "**/.git": true,
+        "**/.gitignore": true,
+        "**/.vscode": true,
+        "**/*.js.map": true,
+        "**/node_modules": true,
+        "**/build": true,
+        "**/tsconfig.json": true,
+        "**/tslint.json": true,
+        "**/LICENSE.md": true
+    }
+}

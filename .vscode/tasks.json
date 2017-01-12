@@ -1,0 +1,21 @@
+{
+    // Typescript build task
+    "version": "0.1.0",
+    "command": "tsc",
+    "isShellCommand": true,
+    "showOutput": "always",
+    "tasks": [
+        {
+            "taskName": "tsc-watch",
+            "args": ["-w","-p","."],
+            "isBuildCommand": true,
+            "isWatching": true,
+            "suppressTaskName": true
+        },
+        {
+            "taskName": "tsc-run-once",
+            "args": ["-p","."],
+            "suppressTaskName": true
+        }
+    ]
+}
