@@ -50,6 +50,11 @@ export const shouldParenthesize = (child: Operator, parent: Operator, nodeType: 
     throw OPER_OR_NODE_ERROR;
 };
 
+/**
+ * Takes an abstraction syntax tree and returns infix expression.
+ * 
+ * *The implementation does not suppport unary operators and functions yet.*
+ */
 export const infix = (
     { token, left, right }: TreeNode,
     parentOp?: Operator,

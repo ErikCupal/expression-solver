@@ -1,6 +1,6 @@
 import { checkSyntax } from "./Lib/CheckSyntax";
 import { createTree } from "./lib/CreateTree";
-import { postfixTokens } from "./lib/Postfixtokens";
+import { postfix } from "./lib/Postfix";
 import { solveTree } from "./lib/SolveTree";
 import { tokenize } from "./lib/Tokenize";
 import { pipe } from "./lib/Utils/Pipe";
@@ -17,7 +17,7 @@ export const solveExpression: (infixExpression: string) => number =
     pipe(
         tokenize,
         checkSyntax,
-        postfixTokens,
+        postfix,
         createTree,
         solveTree
     );

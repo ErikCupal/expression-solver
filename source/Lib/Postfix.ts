@@ -16,7 +16,14 @@ type OutputAndStack = [
     SpecialToken[]
 ];
 
-export const postfixTokens = (infixTokens: Token[]): Token[] => {
+/**
+ * Takes tokenized infix expression and returns its postfix form.
+ * 
+ * Implemented using [Shunting-yard algorithm](https://en.wikipedia.org/wiki/Shunting-yard_algorithm).
+ * 
+ * *The implementation does not suppport unary operators and functions yet.*
+ */
+export const postfix = (infixTokens: Token[]): Token[] => {
 
     const processOperator = ([output, specialTokenStack]: OutputAndStack, currOp: OperatorToken): OutputAndStack => {
         const [lastOp] = specialTokenStack;
@@ -72,6 +79,8 @@ export const postfixTokens = (infixTokens: Token[]): Token[] => {
     const reducer = ([output, specialTokens]: OutputAndStack, a: Token): OutputAndStack => {
 
         if (output.length === 0) {
+            // The array is empty - we're at the beginning of reduce function
+
             switch (a.type) {
                 case "number":
                     return [[a], specialTokens];
@@ -106,6 +115,7 @@ export const postfixTokens = (infixTokens: Token[]): Token[] => {
         }
     };
 
-    return processRemainingTokensOnStack(
-        infixTokens.reduce<OutputAndStack>(reducer, [[], []]));
+    const reduced = infixTokens.reduce<OutputAndStack>(reducer, [[], []]);
+
+    return processRemainingTokensOnStack(reduced);
 };

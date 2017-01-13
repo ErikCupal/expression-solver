@@ -17,6 +17,14 @@ const {
     UNKNOWN_CHAR_ERROR,
 } = Errors;
 
+/**
+ * Takes an expression and maps every character to Token object.
+ * 
+ * - A number character is mapped to new NumberToken object.
+ * - An operator, parenthesis or number divider is mapped to constant object located in *"./Constants"*.
+ * - A whitespace is filtered out.
+ * - Throws exception in case of unknown character.
+ */
 const tokenizeSingleChars = (input: string): Token[] => {
     return Array.from(input)
         .map(char => {
@@ -41,6 +49,10 @@ const tokenizeSingleChars = (input: string): Token[] => {
         .filter(token => token) as Token[];
 };
 
+/**
+ * Takes a single character tokenized expression.
+ * Returns tokenized expression with merged single digits NumberTokens into complete number NumberTokes.
+ */
 const mergeNumbers = (array: Token[]): Token[] => {
 
     const mergeReducer = (array: Token[], newToken: Token): Token[] => {
@@ -149,6 +161,11 @@ const mergeNumbers = (array: Token[]): Token[] => {
         .reverse();
 };
 
+/**
+ * Takes an expression. Returns tokenized expression.
+ * 
+ * *The implementation does not suppport unary operators and functions yet.*
+ */
 export const tokenize: (input: string) => Token[] =
     pipe(
         tokenizeSingleChars,

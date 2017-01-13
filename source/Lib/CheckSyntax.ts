@@ -14,6 +14,11 @@ const {
     UNKNOWN_CHAR_ERROR,
 } = Errors;
 
+/**
+ * Takes tokenized expression returns it back. Throws exception in case of syntax error.
+ * 
+ * *The implementation does not suppport unary operators and functions yet.*
+ */
 export const checkSyntax = (array: Token[]): Token[] => {
 
     const syntaxCheckReducer = (array: Token[], newToken: Token): Token[] => {

@@ -26,6 +26,11 @@ const nodeSolve = (operator: OperatorToken, left?: TreeNode, right?: TreeNode): 
     }
 };
 
+/**
+ * Solves an abstraction syntax tree.
+ * 
+ * *The implementation does not suppport unary operators and functions yet.*
+ */
 export const solveTree = ({ token, left, right }: TreeNode): number => {
     switch (token.type) {
         case "number":

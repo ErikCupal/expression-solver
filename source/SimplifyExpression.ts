@@ -1,7 +1,7 @@
 import { checkSyntax } from "./Lib/CheckSyntax";
 import { createTree } from "./lib/CreateTree";
 import { infix } from "./lib/Infix";
-import { postfixTokens } from "./lib/Postfixtokens";
+import { postfix } from "./lib/Postfix";
 import { tokenize } from "./lib/Tokenize";
 import { pipe } from "./lib/Utils/Pipe";
 
@@ -15,7 +15,7 @@ export const simplifyExpression: (infixExpression: string) => string =
     pipe(
         tokenize,
         checkSyntax,
-        postfixTokens,
+        postfix,
         createTree,
         infix
     );

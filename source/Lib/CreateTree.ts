@@ -1,17 +1,30 @@
 import { Token, TreeNode } from "./Constants";
 
-export const createTree = (postfixedTokens: Token[]): TreeNode => {
+/**
+ * Takes a postfix expression and returns an abstraction syntax tree.
+ * 
+ * [Princip](http://learnyouahaskell.com/functionally-solving-problems#reverse-polish-notation-calculator)
+ * (the algorithm was modified to create an abstraction syntax tree).
+ * 
+ * *The implementation does not suppport unary operators and functions yet.*
+ */
+export const createTree = (postfixExpression: Token[]): TreeNode => {
     const reducer = (stack: TreeNode[], newToken: Token): TreeNode[] => {
         const [x, y, ...xs] = stack;
 
         switch (newToken.type) {
             case "number":
+                // In case the new token is a number, push it to the stack
                 return [{
                     token: newToken,
                     left: undefined,
                     right: undefined,
                 }, ...stack];
             case "operator":
+                // In case the new token is operator
+                // 1) pop two nodes of the stack
+                // 2) create new node with the newToken as token and the two popped nodes as leaves
+                // 3) push the new node on the stack
                 return [{
                     token: newToken,
                     left: y,
@@ -22,7 +35,7 @@ export const createTree = (postfixedTokens: Token[]): TreeNode => {
         }
     };
 
-    const stack = postfixedTokens.reduce(reducer, []);
+    const stack = postfixExpression.reduce(reducer, []);
 
     switch (stack.length) {
         case 1:
