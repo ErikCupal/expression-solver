@@ -15,17 +15,31 @@ class PipeClass {
 
     // 2 - 5
 
+    /**
+     * Takes variable number of functions which take one parameter. Returns a function,
+     * which is their sequenced combination. The returned function takes one parameter.
+     */
     static typedPipe<T1, T2, R>
         (
         f1: (param: T1) => T2,
         f2: (param: T2) => R
         ): (param: T1) => R;
+
+    /**
+     * Takes variable number of functions which take one parameter. Returns a function,
+     * which is their sequenced combination. The returned function takes one parameter.
+     */
     static typedPipe<T1, T2, T3, R>
         (
         f1: (param: T1) => T2,
         f2: (param: T2) => T3,
         f3: (param: T3) => R
         ): (param: T1) => R;
+
+    /**
+     * Takes variable number of functions which take one parameter. Returns a function,
+     * which is their sequenced combination. The returned function takes one parameter.
+     */
     static typedPipe<T1, T2, T3, T4, R>
         (
         f1: (param: T1) => T2,
@@ -33,6 +47,11 @@ class PipeClass {
         f3: (param: T3) => T4,
         f4: (param: T3) => R
         ): (param: T1) => R;
+
+    /**
+     * Takes variable number of functions which take one parameter. Returns a function,
+     * which is their sequenced combination. The returned function takes one parameter.
+     */
     static typedPipe<T1, T2, T3, T4, T5, R>
         (
         f1: (param: T1) => T2,
@@ -44,6 +63,10 @@ class PipeClass {
 
     // 6 - 10
 
+    /**
+     * Takes variable number of functions which take one parameter. Returns a function,
+     * which is their sequenced combination. The returned function takes one parameter.
+     */
     static typedPipe<T1, T2, T3, T4, T5,
         T6,
         R>
@@ -55,7 +78,11 @@ class PipeClass {
         f5: (param: T5) => T6,
         f6: (param: T6) => R
         ): (param: T1) => R;
-
+    
+    /**
+     * Takes variable number of functions which take one parameter. Returns a function,
+     * which is their sequenced combination. The returned function takes one parameter.
+     */
     static typedPipe<T1, T2, T3, T4, T5,
         T6, T7,
         R>
@@ -69,6 +96,10 @@ class PipeClass {
         f7: (param: T7) => R
         ): (param: T1) => R;
 
+    /**
+     * Takes variable number of functions which take one parameter. Returns a function,
+     * which is their sequenced combination. The returned function takes one parameter.
+     */
     static typedPipe<T1, T2, T3, T4, T5,
         T6, T7, T8,
         R>
@@ -83,6 +114,10 @@ class PipeClass {
         f8: (param: T8) => R
         ): (param: T1) => R;
 
+    /**
+     * Takes variable number of functions which take one parameter. Returns a function,
+     * which is their sequenced combination. The returned function takes one parameter.
+     */
     static typedPipe<T1, T2, T3, T4, T5,
         T6, T7, T8, T9,
         R>
@@ -98,6 +133,10 @@ class PipeClass {
         f9: (param: T9) => R
         ): (param: T1) => R;
 
+    /**
+     * Takes variable number of functions which take one parameter. Returns a function,
+     * which is their sequenced combination. The returned function takes one parameter.
+     */
     static typedPipe<T1, T2, T3, T4, T5,
         T6, T7, T8, T9, T10,
         R>
@@ -116,6 +155,10 @@ class PipeClass {
 
     // 11 - 15
 
+    /**
+     * Takes variable number of functions which take one parameter. Returns a function,
+     * which is their sequenced combination. The returned function takes one parameter.
+     */
     static typedPipe<T1, T2, T3, T4, T5,
         T6, T7, T8, T9, T10,
         T11,
@@ -134,6 +177,10 @@ class PipeClass {
         f11: (param: T11) => R
         ): (param: T1) => R;
 
+    /**
+     * Takes variable number of functions which take one parameter. Returns a function,
+     * which is their sequenced combination. The returned function takes one parameter.
+     */
     static typedPipe<T1, T2, T3, T4, T5,
         T6, T7, T8, T9, T10,
         T11, T12,
@@ -153,6 +200,10 @@ class PipeClass {
         f12: (param: T12) => R
         ): (param: T1) => R;
 
+    /**
+     * Takes variable number of functions which take one parameter. Returns a function,
+     * which is their sequenced combination. The returned function takes one parameter.
+     */
     static typedPipe<T1, T2, T3, T4, T5,
         T6, T7, T8, T9, T10,
         T11, T12, T13,
@@ -173,6 +224,10 @@ class PipeClass {
         f13: (param: T13) => R
         ): (param: T1) => R;
 
+    /**
+     * Takes variable number of functions which take one parameter. Returns a function,
+     * which is their sequenced combination. The returned function takes one parameter.
+     */
     static typedPipe<T1, T2, T3, T4, T5,
         T6, T7, T8, T9, T10,
         T11, T12, T13, T14,
@@ -194,6 +249,10 @@ class PipeClass {
         f14: (param: T14) => R
         ): (param: T1) => R;
 
+    /**
+     * Takes variable number of functions which take one parameter. Returns a function,
+     * which is their sequenced combination. The returned function takes one parameter.
+     */
     static typedPipe<T1, T2, T3, T4, T5,
         T6, T7, T8, T9, T10,
         T11, T12, T13, T14, T15,
@@ -218,6 +277,10 @@ class PipeClass {
 
     // 15 - 20
 
+    /**
+     * Takes variable number of functions which take one parameter. Returns a function,
+     * which is their sequenced combination. The returned function takes one parameter.
+     */
     static typedPipe<T1, T2, T3, T4, T5,
         T6, T7, T8, T9, T10,
         T11, T12, T13, T14, T15,
@@ -242,6 +305,10 @@ class PipeClass {
         f16: (param: T16) => R
         ): (param: T1) => R;
 
+    /**
+     * Takes variable number of functions which take one parameter. Returns a function,
+     * which is their sequenced combination. The returned function takes one parameter.
+     */
     static typedPipe<T1, T2, T3, T4, T5,
         T6, T7, T8, T9, T10,
         T11, T12, T13, T14, T15,
@@ -267,6 +334,10 @@ class PipeClass {
         f17: (param: T17) => R
         ): (param: T1) => R;
 
+    /**
+     * Takes variable number of functions which take one parameter. Returns a function,
+     * which is their sequenced combination. The returned function takes one parameter.
+     */
     static typedPipe<T1, T2, T3, T4, T5,
         T6, T7, T8, T9, T10,
         T11, T12, T13, T14, T15,
@@ -293,6 +364,10 @@ class PipeClass {
         f18: (param: T18) => R
         ): (param: T1) => R;
 
+    /**
+     * Takes variable number of functions which take one parameter. Returns a function,
+     * which is their sequenced combination. The returned function takes one parameter.
+     */
     static typedPipe<T1, T2, T3, T4, T5,
         T6, T7, T8, T9, T10,
         T11, T12, T13, T14, T15,
@@ -320,6 +395,10 @@ class PipeClass {
         f19: (param: T19) => R
         ): (param: T1) => R;
 
+    /**
+     * Takes variable number of functions which take one parameter. Returns a function,
+     * which is their sequenced combination. The returned function takes one parameter.
+     */
     static typedPipe<T1, T2, T3, T4, T5,
         T6, T7, T8, T9, T10,
         T11, T12, T13, T14, T15,
@@ -350,6 +429,10 @@ class PipeClass {
 
     // Variable
 
+    /**
+     * Takes variable number of functions which take one parameter. Returns a function,
+     * which is their sequenced combination. The returned function takes one parameter.
+     */
     static typedPipe<T1, T2, T3, R>
         (f1: (param: T1) => T2,
         f2: (param: T2) => T3,
@@ -357,6 +440,10 @@ class PipeClass {
 
     // The actual method
 
+    /**
+     * Takes variable number of functions which take one parameter. Returns a function,
+     * which is their sequenced combination. The returned function takes one parameter.
+     */
     static typedPipe<T1, T2, T3, R>
         (f1: (param: T1) => T2,
         f2: (param: T2) => T3,
