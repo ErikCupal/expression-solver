@@ -1,42 +1,33 @@
 import { Token, TreeNode } from "./Constants";
-import { postfixTokens } from "./PostfixTokens";
-import { head, tail } from "./Utils/Lists";
 
-export const createTree = (postfixTokens: Token[]): TreeNode => {
+export const createTree = (postfixedTokens: Token[]): TreeNode => {
+    const reducer = (stack: TreeNode[], newToken: Token): TreeNode[] => {
+        const [x, y, ...xs] = stack;
 
-    if (postfixTokens.length === 0) {
-        throw "The token array is empty!";
-    }
-
-    const createNodeTree = (array: Token[]): TreeNode | undefined => {
-        const token = head(array);
-        const rest = tail(array);
-
-        if (token) {
-            switch (token.type) {
-                case "number":
-                    return {
-                        token: token,
-                        left: undefined,
-                        right: undefined,
-                    };
-                default:
-                    return {
-                        token: token,
-                        right: createNodeTree(rest),
-                        left: createNodeTree(rest),
-                    };
-            }
+        switch (newToken.type) {
+            case "number":
+                return [{
+                    token: newToken,
+                    left: undefined,
+                    right: undefined,
+                }, ...stack];
+            case "operator":
+                return [{
+                    token: newToken,
+                    left: y,
+                    right: x
+                }, ...xs];
+            default:
+                throw "Invalid token!";
         }
-
-        return undefined;
     };
 
-    const tree = createNodeTree([...postfixTokens]);
+    const stack = postfixedTokens.reduce(reducer, []);
 
-    if (tree) {
-        return tree;
-    } else {
-        throw "Error ocurred while creating the tree";
+    switch (stack.length) {
+        case 1:
+            return stack[0];
+        default:
+            throw "Error ocurred while creating the tree";
     }
 };
