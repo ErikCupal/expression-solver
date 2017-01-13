@@ -1,3 +1,4 @@
+import { createTreeFromExpression } from "./CreateTreeFromExpression";
 import { checkSyntax } from "./Lib/CheckSyntax";
 import { createTree } from "./lib/CreateTree";
 import { infix } from "./lib/Infix";
@@ -13,9 +14,6 @@ import { pipe } from "./lib/Utils/Pipe";
  */
 export const simplifyExpression: (infixExpression: string) => string =
     pipe(
-        tokenize,
-        checkSyntax,
-        postfix,
-        createTree,
+        createTreeFromExpression,
         infix
     );
