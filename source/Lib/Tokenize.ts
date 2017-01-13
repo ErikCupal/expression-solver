@@ -6,7 +6,6 @@ import {
     isOperator,
     isParenthesis,
     NumberToken,
-    ParenthesisTokens,
     Token
 } from "./Constants";
 import { Errors } from "./Errors";
@@ -15,19 +14,11 @@ import { pipe } from "./Utils/Pipe";
 import { isInteger, isWhitespace } from "./Utils/TypeGuards";
 
 const {
-    RIGHT_PAR,
-    LEFT_PAR
-} = ParenthesisTokens;
-
-const {
-    PARENTHESES_ERROR,
-    PAREN_OR_OPER_ERROR,
-    OPERATORS_ERROR,
     UNKNOWN_CHAR_ERROR,
 } = Errors;
 
-const singleTokenize = (input: string): Token[] =>
-    Array.from(input)
+const tokenizeSingleChars = (input: string): Token[] => {
+    return Array.from(input)
         .map(char => {
             switch (true) {
                 case isInteger(char):
@@ -48,125 +39,118 @@ const singleTokenize = (input: string): Token[] =>
             }
         })
         .filter(token => token) as Token[];
+};
 
 const mergeNumbers = (array: Token[]): Token[] => {
-    const mergeReducer = (array: Token[], newToken: Token): Token[] => {
-        const last = head(array);
-        const rest = tail(array);
 
-        if (last === undefined) {
+    const mergeReducer = (array: Token[], newToken: Token): Token[] => {
+        const lastToken = head(array);
+
+        if (lastToken === undefined) {
             switch (newToken.type) {
                 case "number":
                     return [{
-                        ...newToken,
-                        order: 1
+                        type: newToken.type,
+                        value: newToken.value,
                     }];
                 case "numberDivider":
                     return [{
                         type: "number",
                         value: 0,
-                        order: 0,
+                        decimalPlace: 0,
                     }];
-                case "operator":
-                    throw OPERATORS_ERROR;
                 default:
                     return [newToken];
             }
         } else {
-            switch (last.type) {
+
+            // We don't want to get the rest off the array until it's really necessary
+            // because *tail* function is mutative and pops values from the array
+            // even if it was not actually used.
+            const rest = () => tail(array);
+
+            switch (lastToken.type) {
                 case "number":
                     switch (newToken.type) {
                         case "number":
-                            return prepend(rest, {
-                                type: last.type,
-                                value: newToken.value * 10 ** last.order + last.value,
-                                order: last.order + 1
+                            return prepend(rest(), {
+                                type: lastToken.type,
+                                value: lastToken.value * 10 + newToken.value,
+                                decimalPlace: (typeof lastToken.decimalPlace === "number")
+                                    ? lastToken.decimalPlace + 1
+                                    : undefined
                             });
                         case "numberDivider":
-                            return prepend(rest, {
-                                type: last.type,
-                                value: last.value * 10 ** (-last.order),
-                                order: 0
+                            return prepend(rest(), {
+                                type: lastToken.type,
+                                value: lastToken.value,
+                                decimalPlace: 0
                             });
                         default:
-                            return prepend(rest, newToken, {
-                                type: last.type,
-                                value: last.value
+                            return prepend(rest(), newToken, {
+                                type: lastToken.type,
+                                value: (typeof lastToken.decimalPlace === "number")
+                                    ? lastToken.value * 10 ** (-lastToken.decimalPlace)
+                                    : lastToken.value,
+                                decimalPlace: undefined
                             });
                     }
-                case "operator":
-                    switch (newToken.type) {
-                        case "operator":
-                            throw OPERATORS_ERROR;
-                        case "parenthesis":
-                            switch (newToken) {
-                                case LEFT_PAR:
-                                    throw PAREN_OR_OPER_ERROR;
-                            }
-                            break;
-                    } // intended fall
-                case "parenthesis":
-                    switch (last) {
-                        case LEFT_PAR:
-                            switch (newToken.type) {
-                                case "parenthesis":
-                                    switch (newToken) {
-                                        case RIGHT_PAR:
-                                            throw PARENTHESES_ERROR;
-                                    }
-                                    break;
-                            }
-                            break;
-                        case RIGHT_PAR:
-                            switch (newToken.type) {
-                                case "operator":
-                                    throw PAREN_OR_OPER_ERROR;
-                                case "parenthesis":
-                                    switch (newToken) {
-                                        case LEFT_PAR:
-                                            throw PARENTHESES_ERROR;
-                                    }
-                                    break;
-                            }
-                            break;
-                    } // intended fall
-                // fall case operator or parenthesis
                 default:
                     switch (newToken.type) {
                         case "number":
-                            return prepend(rest, {
-                                ...newToken,
-                                order: 1
-                            }, last);
+                            return prepend(rest(), {
+                                type: newToken.type,
+                                value: newToken.value,
+                            }, lastToken);
                         case "numberDivider":
-                            return prepend(rest, {
+                            return prepend(rest(), {
                                 type: "number",
                                 value: 0,
-                                order: 1
-                            } as NumberToken, last);
+                                decimalPlace: 0
+                            } as NumberToken, lastToken);
                         default:
-                            return prepend(rest, newToken, last);
+                            return prepend(rest(), newToken, lastToken);
                     }
             }
         };
     };
 
-    const result = array.reduceRight(mergeReducer, []);
-
-    const firstElement = head(result);
-
-    if (firstElement) {
-        switch (firstElement.type) {
-            case "operator":
-                throw OPERATORS_ERROR;
+    const convertLastNumberIfPresent = (token: Token) => {
+        switch (token.type) {
+            case "number":
+                return {
+                    type: token.type,
+                    value: (typeof token.decimalPlace === "number")
+                        ? token.value * 10 ** (-token.decimalPlace)
+                        : token.value,
+                    decimalPlace: undefined
+                };
+            default:
+                return token;
         }
-    }
+    };
 
-    return result;
+    const removeDecimalPlaceProperty = (token: Token) => {
+        switch (token.type) {
+            case "number":
+                return {
+                    type: token.type,
+                    value: token.value
+                };
+            default:
+                return token;
+        }
+    };
+
+    return array
+        .reduce(mergeReducer, [])
+        .map(convertLastNumberIfPresent)
+        .map(removeDecimalPlaceProperty)
+        .reverse();
 };
 
 export const tokenize: (input: string) => Token[] =
     pipe(
-        singleTokenize,
+        tokenizeSingleChars,
         mergeNumbers
     );

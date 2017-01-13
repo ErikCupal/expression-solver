@@ -41,9 +41,12 @@ export type NumberDividerToken = {
 export type NumberToken = {
     readonly type: "number"
     readonly value: number
-    readonly order?: number
+    readonly decimalPlace?: number
 };
 
+/**
+ * Constant and readonly object of OperatorToken objects
+ */
 export const OperatorTokens: {
     readonly [K: string]: OperatorToken
 } = {
@@ -86,6 +89,9 @@ export const OperatorTokens: {
         }
     };
 
+/**
+ * Constant and readonly object of ParenthesisToken objects
+ */
 export const ParenthesisTokens: {
     readonly [K: string]: ParenthesisToken
 } = {
@@ -99,6 +105,9 @@ export const ParenthesisTokens: {
         },
     };
 
+/**
+ * Constant and readonly object of NumberDividerToken objects
+ */
 export const NumberDividerTokens: {
     readonly [K: string]: NumberDividerToken
 } = {
@@ -114,20 +123,32 @@ export const NumberDividerTokens: {
 
 // Token getters
 
+/**
+ * Gets an OperatorToken from OperatorTokens object
+ */
 export const getOperatorToken = (value: string) =>
     Object.values(OperatorTokens)
         .find(operatorToken => value === operatorToken.value) as OperatorToken;
 
+/**
+ * Gets an ParenthesisToken from ParenthesisTokens object
+ */
 export const getParenthesisToken = (value: string) =>
     Object.values(ParenthesisTokens)
         .find(par => value === par.value) as ParenthesisToken;
 
+/**
+ * Gets an NumberDividerToken from NumberDividerTokens object
+ */
 export const getNumberDividerToken = (value: string) =>
     Object.values(NumberDividerTokens)
         .find(par => value === par.value) as NumberDividerToken;
 
 // Token type checkers
 
+/**
+ * Checks whether the operator exists in OperatorTokens object
+ */
 export const isOperator = (value: string) => {
     if (Object.values(OperatorTokens)
         .find(operator => value === operator.value)) {
@@ -137,6 +158,9 @@ export const isOperator = (value: string) => {
     }
 };
 
+/**
+ * Checks whether the parenthesis exists in ParenthesisTokens object
+ */
 export const isParenthesis = (value: string) => {
     if (Object.values(ParenthesisTokens)
         .find(par => value === par.value)) {
@@ -146,6 +170,9 @@ export const isParenthesis = (value: string) => {
     }
 };
 
+/**
+ * Checks whether the number divider exists in NumberDividerTokens object
+ */
 export const isNumberDivider = (value: string) => {
     if (Object.values(NumberDividerTokens)
         .find(par => value === par.value)) {

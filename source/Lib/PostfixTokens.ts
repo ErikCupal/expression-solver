@@ -19,11 +19,11 @@ type OutputAndStack = [
 export const postfixTokens = (infixTokens: Token[]): Token[] => {
 
     const processOperator = ([output, specialTokenStack]: OutputAndStack, currOp: OperatorToken): OutputAndStack => {
-        if (specialTokenStack.length === 0) {
+        const [lastOp] = specialTokenStack;
+
+        if (lastOp === undefined) {
             return [output, [currOp]];
         } else {
-            const lastOp = head(specialTokenStack) as SpecialToken;
-
             const meetsAlgorithmConditions =
                 lastOp.type === "operator" &&
                 ((currOp.associativity === "left" && currOp.precedance <= lastOp.precedance) ||
@@ -39,11 +39,11 @@ export const postfixTokens = (infixTokens: Token[]): Token[] => {
     };
 
     const processRightParenthesis = ([output, specialTokenStack]: OutputAndStack): OutputAndStack => {
-        if (specialTokenStack.length === 0) {
+        const [lastParenthesis] = specialTokenStack;
+
+        if (lastParenthesis === undefined) {
             throw PARENTHESES_ERROR;
         } else {
-            const lastParenthesis = head(specialTokenStack) as SpecialToken;
-
             switch (lastParenthesis) {
                 case LEFT_PAR:
                     return [output, tail(specialTokenStack)];
