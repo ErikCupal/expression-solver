@@ -132,21 +132,21 @@ export const NumberDividerTokens: {
 // Token getters
 
 /**
- * Gets an OperatorToken from OperatorTokens object
+ * Gets OperatorToken from OperatorTokens object
  */
 export const getOperatorToken = (value: string) =>
     Object.values(OperatorTokens)
         .find(operatorToken => value === operatorToken.value) as OperatorToken;
 
 /**
- * Gets an ParenthesisToken from ParenthesisTokens object
+ * Gets ParenthesisToken from ParenthesisTokens object
  */
 export const getParenthesisToken = (value: string) =>
     Object.values(ParenthesisTokens)
         .find(par => value === par.value) as ParenthesisToken;
 
 /**
- * Gets an NumberDividerToken from NumberDividerTokens object
+ * Gets NumberDividerToken from NumberDividerTokens object
  */
 export const getNumberDividerToken = (value: string) =>
     Object.values(NumberDividerTokens)
