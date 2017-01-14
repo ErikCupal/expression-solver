@@ -59,7 +59,7 @@
 
 	var _CreateTreeFromExpression = __webpack_require__(3);
 
-	var _Infix = __webpack_require__(13);
+	var _InfixTree = __webpack_require__(13);
 
 	var _PrintTree = __webpack_require__(14);
 
@@ -83,7 +83,7 @@
 	        try {
 	            var tree = (0, _CreateTreeFromExpression.createTreeFromExpression)(expr);
 	            var result = (0, _SolveTree.solveTree)(tree);
-	            var simplified = (0, _Infix.infix)(tree);
+	            var simplified = (0, _InfixTree.infixTree)(tree);
 	            var htmlTree = (0, _PrintTree.printTree)(tree);
 	            var outputHtml = (0, _Html.div)((0, _Html.p)((0, _Html.span)("Result: " + result)), (0, _Html.p)((0, _Html.span)("Canonical form: " + simplified)), (0, _Html.p)((0, _Html.span)("Abstraction syntax tree:"), (0, _Html.ul)(htmlTree)));
 	            (0, _Html.render)(outputHtml, outputElement);
@@ -334,7 +334,7 @@
 	};
 	// Token getters
 	/**
-	 * Gets an OperatorToken from OperatorTokens object
+	 * Gets OperatorToken from OperatorTokens object
 	 */
 	var getOperatorToken = exports.getOperatorToken = function getOperatorToken(value) {
 	    return Object.values(OperatorTokens).find(function (operatorToken) {
@@ -342,7 +342,7 @@
 	    });
 	};
 	/**
-	 * Gets an ParenthesisToken from ParenthesisTokens object
+	 * Gets ParenthesisToken from ParenthesisTokens object
 	 */
 	var getParenthesisToken = exports.getParenthesisToken = function getParenthesisToken(value) {
 	    return Object.values(ParenthesisTokens).find(function (par) {
@@ -350,7 +350,7 @@
 	    });
 	};
 	/**
-	 * Gets an NumberDividerToken from NumberDividerTokens object
+	 * Gets NumberDividerToken from NumberDividerTokens object
 	 */
 	var getNumberDividerToken = exports.getNumberDividerToken = function getNumberDividerToken(value) {
 	    return Object.values(NumberDividerTokens).find(function (par) {
@@ -944,7 +944,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.infix = exports.shouldParenthesize = undefined;
+	exports.infixTree = exports.shouldParenthesize = undefined;
 
 	var _Errors = __webpack_require__(6);
 
@@ -996,7 +996,7 @@
 	 *
 	 * *The implementation does not suppport unary operators and functions yet.*
 	 */
-	var infix = exports.infix = function infix(_ref, parentOp, nodeType) {
+	var infixTree = exports.infixTree = function infixTree(_ref, parentOp, nodeType) {
 	    var value = _ref.value,
 	        left = _ref.left,
 	        right = _ref.right;
@@ -1005,9 +1005,9 @@
 	        case "number":
 	            return value.value.toString();
 	        case "operator":
-	            var leftNode = infix(left, value, LEFT);
+	            var leftNode = infixTree(left, value, LEFT);
 	            var tokenValue = value.value.toString();
-	            var rightNode = infix(right, value, RIGHT);
+	            var rightNode = infixTree(right, value, RIGHT);
 	            if (parentOp && nodeType) {
 	                var parenthesize = shouldParenthesize(value, parentOp, nodeType);
 	                if (parenthesize) {
@@ -1102,7 +1102,12 @@
 
 	function _toArray(arr) { return Array.isArray(arr) ? arr : Array.from(arr); }
 
-	var render = exports.render = function render(html, renderElement) {
+	/**
+	 * Render HTML in string fromat in the renderElement
+	 */
+	/**
+	 * Render HTML in string fromat in the renderElement
+	 */var render = exports.render = function render(html, renderElement) {
 	    return renderElement.innerHTML = html;
 	};
 	var enclosedTag = exports.enclosedTag = function enclosedTag(tagName, params) {
