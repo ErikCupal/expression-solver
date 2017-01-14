@@ -11,7 +11,7 @@ Other operators can be easily added.
 Unfortunately, it doesn't support [unary](https://en.wikipedia.org/wiki/Unary_operation) operators yet :/.
 It is written using functional Javascript.
 
-This was created for learning purposes.
+This repo was created for learning purposes.
 
 ## [Demo](https://jsfiddle.net/lapuckire/77bcvzox/)
 
