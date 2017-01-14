@@ -11,7 +11,7 @@ import { Token, Tree, Leaf } from "./Constants";
  */
 export const createTree = (postfixExpression: Token[]): Tree => {
     const reducer = (stack: (Node_ | Leaf)[], newToken: Token): (Node_ | Leaf)[] => {
-        const [x, y, ...xs] = stack;
+        const [x, y, ...rest] = stack;
 
         switch (newToken.type) {
             case "number":
@@ -30,7 +30,7 @@ export const createTree = (postfixExpression: Token[]): Tree => {
                     value: newToken,
                     left: y,
                     right: x
-                }, ...xs];
+                }, ...rest];
             default:
                 throw "Invalid token!";
         }
