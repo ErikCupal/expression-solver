@@ -22,7 +22,11 @@ This was created for learning purposes.
 0. Open terminal in the root folder
 0. Run `npm i` in the terminal
 0. Run `npm run dev` in the terminal
-0. Experiment :)
+0. Experiment with the source code :). The page is automatically updated on file save.
+
+## How to bundle it into single Javascript file
+
+Run `npm run pack` in terminal. There will be `app.js` file in `output` folder.
 
 ## How does it work
 
