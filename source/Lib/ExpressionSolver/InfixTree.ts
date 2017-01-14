@@ -55,7 +55,7 @@ export const shouldParenthesize = (child: Operator, parent: Operator, nodeType: 
  * 
  * *The implementation does not suppport unary operators and functions yet.*
  */
-export const infix = (
+export const infixTree = (
     { value, left, right }: Tree,
     parentOp?: Operator,
     nodeType?: NodeType
@@ -66,9 +66,9 @@ export const infix = (
             return value.value.toString();
         case "operator":
 
-            const leftNode = infix(left as (Node_ | Leaf), value, LEFT);
+            const leftNode = infixTree(left as (Node_ | Leaf), value, LEFT);
             const tokenValue = value.value.toString();
-            const rightNode = infix(right as (Node_ | Leaf), value, RIGHT);
+            const rightNode = infixTree(right as (Node_ | Leaf), value, RIGHT);
 
             if (parentOp && nodeType) {
                 const parenthesize = shouldParenthesize(value, parentOp, nodeType);

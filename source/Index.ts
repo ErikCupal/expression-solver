@@ -1,6 +1,6 @@
 import * as Dom from "./Lib/Dom";
 import { createTreeFromExpression } from "./Lib/ExpressionSolver/CreateTreeFromExpression";
-import { infix } from "./Lib/ExpressionSolver/Infix";
+import { infixTree } from "./Lib/ExpressionSolver/InfixTree";
 import { printTree } from "./Lib/ExpressionSolver/PrintTree";
 import { solveTree } from "./Lib/ExpressionSolver/SolveTree";
 import { div, h1, input, p, render, span, ul } from "./Lib/Html";
@@ -37,7 +37,7 @@ inputElement.addEventListener("input", (e: any) => {
             const tree = createTreeFromExpression(expr);
 
             const result = solveTree(tree);
-            const simplified = infix(tree);
+            const simplified = infixTree(tree);
             const htmlTree = printTree(tree);
 
             const outputHtml =
