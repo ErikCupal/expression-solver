@@ -2,13 +2,12 @@
     "compileOnSave": true,
     "compilerOptions": {
         "rootDir": "./source",
-        "outDir": "./build",
         "target": "es2017",
         "lib": [
             "es2017",
             "dom"
         ],
-        "module": "commonjs",
+        "module": "es2015",
         "sourceMap": true,
         "alwaysStrict": true,
         "strictNullChecks": true,

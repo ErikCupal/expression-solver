@@ -8,7 +8,7 @@
         "**/*.js.map": true,
         "**/node_modules": true,
         "**/build": true,
-        "**/tsconfig.json": true,
+        "**/tsconfig.json": false,
         "**/tslint.json": true,
         "**/LICENSE.md": true
     }

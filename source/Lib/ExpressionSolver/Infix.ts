@@ -1,4 +1,4 @@
-import { OperatorToken, TreeNode } from "./Constants";
+import { Leaf, Node_, OperatorToken, Tree } from "./Constants";
 import { Errors } from "./Errors";
 
 const {
@@ -56,22 +56,22 @@ export const shouldParenthesize = (child: Operator, parent: Operator, nodeType: 
  * *The implementation does not suppport unary operators and functions yet.*
  */
 export const infix = (
-    { token, left, right }: TreeNode,
+    { value, left, right }: Tree,
     parentOp?: Operator,
     nodeType?: NodeType
 ): string => {
 
-    switch (token.type) {
+    switch (value.type) {
         case "number":
-            return token.value.toString();
+            return value.value.toString();
         case "operator":
 
-            const leftNode = infix(left as TreeNode, token, LEFT);
-            const tokenValue = token.value.toString();
-            const rightNode = infix(right as TreeNode, token, RIGHT);
+            const leftNode = infix(left as (Node_ | Leaf), value, LEFT);
+            const tokenValue = value.value.toString();
+            const rightNode = infix(right as (Node_ | Leaf), value, RIGHT);
 
             if (parentOp && nodeType) {
-                const parenthesize = shouldParenthesize(token, parentOp, nodeType);
+                const parenthesize = shouldParenthesize(value, parentOp, nodeType);
                 if (parenthesize) {
                     return `(${leftNode} ${tokenValue} ${rightNode})`;
                 } else {

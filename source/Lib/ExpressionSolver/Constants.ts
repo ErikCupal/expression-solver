@@ -1,7 +1,15 @@
-export type TreeNode = {
-    token: Token
-    left?: TreeNode
-    right?: TreeNode
+export type Tree = Node_ | Leaf;
+
+export type Node_ = {
+    value: Token
+    left: Node_ | Leaf
+    right: Node_ | Leaf
+};
+
+export type Leaf = {
+    value: Token
+    left: undefined
+    right: undefined
 };
 
 export type Token =

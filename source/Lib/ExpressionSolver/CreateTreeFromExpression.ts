@@ -1,9 +1,9 @@
-import { checkSyntax } from "./Lib/CheckSyntax";
-import { TreeNode } from "./Lib/Constants";
-import { createTree } from "./lib/CreateTree";
-import { postfix } from "./lib/Postfix";
-import { tokenize } from "./lib/Tokenize";
-import { pipe } from "./lib/Utils/Pipe";
+import { checkSyntax } from "./CheckSyntax";
+import { Tree } from "./Constants";
+import { createTree } from "./CreateTree";
+import { postfix } from "./Postfix";
+import { tokenize } from "./Tokenize";
+import { pipe } from "./Utils/Pipe";
 
 /**
  * Resolves the infix notation expression into abstraction syntax tree.
@@ -13,7 +13,7 @@ import { pipe } from "./lib/Utils/Pipe";
  * @param infixExpression An expression in infix notation
  * @returns Abstraction syntax tree
  */
-export const createTreeFromExpression: (infixExpression: string) => TreeNode =
+export const createTreeFromExpression: (infixExpression: string) => Tree =
     pipe(
         tokenize,
         checkSyntax,

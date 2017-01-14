@@ -2,14 +2,20 @@
   "name": "expression-solver",
   "version": "1.0.0",
   "description": "A little set of functions for solving mathematical expressions.",
-  "main": "./build/Index.js",
   "scripts": {
-    "run": "node ./build/Index.js"
+    "dev": "webpack-dev-server --open",
+    "pack": "webpack"
   },
   "author": "Erik Cupal",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^7.0.0",
-    "typescript": "^2.2.0-dev.20170111"
+    "babel-core": "^6.21.0",
+    "babel-loader": "^6.2.10",
+    "babel-preset-latest": "^6.16.0",
+    "ts-loader": "^1.3.3",
+    "typescript": "^2.2.0-dev.20170111",
+    "webpack": "^1.14.0",
+    "webpack-dev-server": "^1.16.2"
   }
 }

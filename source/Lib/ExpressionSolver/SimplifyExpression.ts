@@ -1,10 +1,6 @@
 import { createTreeFromExpression } from "./CreateTreeFromExpression";
-import { checkSyntax } from "./Lib/CheckSyntax";
-import { createTree } from "./lib/CreateTree";
-import { infix } from "./lib/Infix";
-import { postfix } from "./lib/Postfix";
-import { tokenize } from "./lib/Tokenize";
-import { pipe } from "./lib/Utils/Pipe";
+import { infix } from "./Infix";
+import { pipe } from "./Utils/Pipe";
 
 /**
  * Simplifies the infix notation expression by removing unnecessary parentheses and creating consistent spacing

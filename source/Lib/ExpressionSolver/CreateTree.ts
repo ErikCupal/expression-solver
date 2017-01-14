@@ -1,4 +1,5 @@
-import { Token, TreeNode } from "./Constants";
+import { Node_ } from "./Constants";
+import { Token, Tree, Leaf } from "./Constants";
 
 /**
  * Takes a postfix expression and returns an abstraction syntax tree.
@@ -8,15 +9,15 @@ import { Token, TreeNode } from "./Constants";
  * 
  * *The implementation does not suppport unary operators and functions yet.*
  */
-export const createTree = (postfixExpression: Token[]): TreeNode => {
-    const reducer = (stack: TreeNode[], newToken: Token): TreeNode[] => {
+export const createTree = (postfixExpression: Token[]): Tree => {
+    const reducer = (stack: (Node_ | Leaf)[], newToken: Token): (Node_ | Leaf)[] => {
         const [x, y, ...xs] = stack;
 
         switch (newToken.type) {
             case "number":
                 // In case the new token is a number, push it to the stack
                 return [{
-                    token: newToken,
+                    value: newToken,
                     left: undefined,
                     right: undefined,
                 }, ...stack];
@@ -26,7 +27,7 @@ export const createTree = (postfixExpression: Token[]): TreeNode => {
                 // 2) create new node with the newToken as token and the two popped nodes as leaves
                 // 3) push the new node on the stack
                 return [{
-                    token: newToken,
+                    value: newToken,
                     left: y,
                     right: x
                 }, ...xs];

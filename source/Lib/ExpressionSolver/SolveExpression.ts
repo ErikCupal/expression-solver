@@ -1,6 +1,6 @@
 import { createTreeFromExpression } from "./CreateTreeFromExpression";
-import { solveTree } from "./lib/SolveTree";
-import { pipe } from "./lib/Utils/Pipe";
+import { solveTree } from "./SolveTree";
+import { pipe } from "./Utils/Pipe";
 
 /**
  * Resolves the infix notation expression into a number
