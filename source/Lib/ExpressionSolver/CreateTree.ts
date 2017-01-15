@@ -66,6 +66,8 @@ export const createTree = (postfixExpression: Token[]): Tree => {
      *      The function returns something - the something will be passed as the accumulated value during next iteration
      * After the iteration finished, it returns the accumulated value
      * 
+     * In this case the accumulated value is our stack
+     * 
      * On the very first iteration there is no accumulated value - we must provide initial value to the reduce function
      *      In this case: empty array [] -----------
      *                                              |
