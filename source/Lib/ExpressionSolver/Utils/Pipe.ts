@@ -1,15 +1,15 @@
 const combineReducer = <T>(param: T, func: (param: T) => T) =>
-    func(param);
+    func(param)
 
 const combine = (param: any, funcs: Array<(param: any) => any>): any =>
-    funcs.reduce(combineReducer, param);
+    funcs.reduce(combineReducer, param)
 
 /**
  * Takes variable number of functions which take one parameter. Returns a function,
  * which is their sequenced combination. The returned function takes one parameter.
  */
 const untypedPipe = (...funcs: Array<(param: any) => any>) =>
-    (param: any) => combine(param, funcs);
+    (param: any) => combine(param, funcs)
 
 /**
  * We're creating 20 diferent Typescript overloads in order to support proper typechecking.
@@ -460,12 +460,12 @@ class PipeClass {
                     f1,
                     f2,
                     ...fnArray
-                );
+                )
             default:
                 return untypedPipe(
                     f1,
                     f2
-                );
+                )
         }
     }
 }
@@ -474,4 +474,4 @@ class PipeClass {
  * Takes variable number of functions which take one parameter. Returns a function,
  * which is their sequenced combination. The returned function takes one parameter.
  */
-export const pipe = PipeClass.typedPipe;
+export const pipe = PipeClass.typedPipe

@@ -4,12 +4,12 @@
     "files.exclude": {
         "**/.git": true,
         "**/.gitignore": true,
-        "**/.vscode": false,
+        "**/.vscode": true,
         "**/*.js.map": true,
         "**/node_modules": true,
         "**/build": true,
-        "**/tsconfig.json": false,
-        "**/tslint.json": true,
+        "**/tsconfig.json": true,
+        "**/tslint.json": false,
         "**/LICENSE.md": true
     }
 }

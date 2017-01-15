@@ -1,4 +1,4 @@
-import { Tree } from "./Constants";
+import { Tree } from "./Constants"
 
 /**
  * Solves an abstraction syntax tree.
@@ -6,10 +6,10 @@ import { Tree } from "./Constants";
 export const solveTree = ({ value, left, right }: Tree): number => {
     switch (value.type) {
         case "number":
-            return value.value;
+            return value.value
         case "operator":
             if (left && right) {
-                const operator = value;
+                const operator = value
 
                 // Ckecks whether the operator has a function
                 // Apply operator's function on left and right leaves
@@ -17,15 +17,15 @@ export const solveTree = ({ value, left, right }: Tree): number => {
                 if (operator.function) {
                     return operator.function(
                         solveTree(left),
-                        solveTree(right)
-                    );
+                        solveTree(right),
+                    )
                 } else {
-                    throw "Operator doesn't have binary function!";
+                    throw "Operator doesn't have binary function!"
                 }
             } else {
-                throw "Tree error!";
+                throw "Tree error!"
             }
         default:
-            throw "Unknown token!";
+            throw "Unknown token!"
     }
-};
+}

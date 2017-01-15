@@ -7,20 +7,20 @@ import {
     isParenthesis,
     NumberToken,
     ParenthesisTokens,
-    Token
-} from "./Constants";
-import { Errors } from "./Errors";
-import { prepend } from "./Utils/Lists";
-import { pipe } from "./Utils/Pipe";
-import { isInteger, isWhitespace } from "./Utils/TypeGuards";
+    Token,
+} from "./Constants"
+import { Errors } from "./Errors"
+import { prepend } from "./Utils/Lists"
+import { pipe } from "./Utils/Pipe"
+import { isInteger, isWhitespace } from "./Utils/TypeGuards"
 
 const {
     UNKNOWN_CHAR_ERROR,
-} = Errors;
+} = Errors
 
 const {
-    LEFT_PAR
-} = ParenthesisTokens;
+    LEFT_PAR,
+} = ParenthesisTokens
 
 /**
  * Takes an expression and maps every character to Token object.
@@ -38,68 +38,68 @@ const tokenizeSingleChars = (input: string): Token[] => {
                 case isInteger(char):
                     return {
                         type: "number",
-                        value: Number(char)
-                    };
+                        value: Number(char),
+                    }
                 case isOperator(char):
-                    return getOperatorToken(char);
+                    return getOperatorToken(char)
                 case isParenthesis(char):
-                    return getParenthesisToken(char);
+                    return getParenthesisToken(char)
                 case isNumberDivider(char):
-                    return getNumberDividerToken(char);
+                    return getNumberDividerToken(char)
                 case isWhitespace(char):
-                    return undefined;
+                    return undefined
                 default:
-                    throw UNKNOWN_CHAR_ERROR;
+                    throw UNKNOWN_CHAR_ERROR
             }
         })
         // filter out undefines (the whitespaces)
-        .filter(token => token) as Token[];
-};
+        .filter(token => token) as Token[]
+}
 
 const resolveUnaryOperators = (array: Token[]): Token[] => {
 
     const reducer = (outputStack: Token[], newToken: Token): Token[] => {
         switch (outputStack.length) {
             case 0:
-                return prepend(outputStack, newToken);
+                return prepend(outputStack, newToken)
             case 1:
-                const [last] = outputStack;
+                const [last] = outputStack
                 if (last.type === "operator" && last.unaryFunction) {
                     if (newToken.type === "number") {
-                        outputStack.shift();
+                        outputStack.shift()
 
                         return prepend(outputStack, {
                             type: newToken.type,
                             value: last.unaryFunction(newToken.value),
-                        });
+                        })
                     }
                 }
 
-                return prepend(outputStack, newToken);
+                return prepend(outputStack, newToken)
             default:
-                const [firstLast, secondLast] = outputStack;
+                const [firstLast, secondLast] = outputStack
                 if (secondLast === LEFT_PAR) {
                     if (firstLast.type === "operator" && firstLast.unaryFunction) {
                         if (newToken.type === "number") {
-                            outputStack.shift();
-                            outputStack.shift();
+                            outputStack.shift()
+                            outputStack.shift()
 
                             return prepend(outputStack, {
                                 type: newToken.type,
                                 value: firstLast.unaryFunction(newToken.value),
-                            }, LEFT_PAR);
+                            }, LEFT_PAR)
                         }
                     }
                 }
 
-                return prepend(outputStack, newToken);
+                return prepend(outputStack, newToken)
         }
-    };
+    }
 
     return array
         .reduce(reducer, [])
-        .reverse();
-};
+        .reverse()
+}
 
 
 /**
@@ -118,7 +118,7 @@ const mergeNumbers = (array: Token[]): Token[] => {
     const mergeReducer = (outputStack: Token[], newToken: Token): Token[] => {
 
         // Take first token from the stack
-        const [lastToken] = outputStack;
+        const [lastToken] = outputStack
 
         if (lastToken === undefined) {
             // We're at the beginning of the array
@@ -128,7 +128,7 @@ const mergeNumbers = (array: Token[]): Token[] => {
                     /**
                      * Hmm number, just create array with this it
                      */
-                    return [newToken];
+                    return [newToken]
                 case "numberDivider":
                     /**
                      * It's possible it can be like .3 -> 0.3
@@ -139,9 +139,9 @@ const mergeNumbers = (array: Token[]): Token[] => {
                         type: "number",
                         value: 0,
                         decimalPlace: 0,
-                    }];
+                    }]
                 default:
-                    return [newToken];
+                    return [newToken]
             }
         } else {
 
@@ -150,7 +150,7 @@ const mergeNumbers = (array: Token[]): Token[] => {
 
                     // We throw away the first element from the array
                     // because we need to replace it with another token
-                    outputStack.shift();
+                    outputStack.shift()
 
                     switch (newToken.type) {
                         case "number":
@@ -164,8 +164,8 @@ const mergeNumbers = (array: Token[]): Token[] => {
                                 value: lastToken.value * 10 + newToken.value,
                                 decimalPlace: (typeof lastToken.decimalPlace === "number")
                                     ? lastToken.decimalPlace + 1
-                                    : undefined
-                            });
+                                    : undefined,
+                            })
                         case "numberDivider":
                             /**
                              * e.g 4562.
@@ -174,8 +174,8 @@ const mergeNumbers = (array: Token[]): Token[] => {
                             return prepend(outputStack, {
                                 type: lastToken.type,
                                 value: lastToken.value,
-                                decimalPlace: 0
-                            });
+                                decimalPlace: 0,
+                            })
                         default:
                             switch (lastToken.decimalPlace !== undefined) {
                                 case true:
@@ -185,10 +185,10 @@ const mergeNumbers = (array: Token[]): Token[] => {
                                      */
                                     return prepend(outputStack, newToken, {
                                         type: lastToken.type,
-                                        value: lastToken.value * 10 ** (-lastToken.decimalPlace)
-                                    });
+                                        value: lastToken.value * 10 ** (-lastToken.decimalPlace),
+                                    })
                                 default:
-                                    return prepend(outputStack, newToken, lastToken);
+                                    return prepend(outputStack, newToken, lastToken)
                             }
                     }
                 default:
@@ -199,7 +199,7 @@ const mergeNumbers = (array: Token[]): Token[] => {
                             return prepend(outputStack, {
                                 type: newToken.type,
                                 value: newToken.value,
-                            });
+                            })
                         case "numberDivider":
                             /**
                              * e.g. last = *, new = .
@@ -210,21 +210,21 @@ const mergeNumbers = (array: Token[]): Token[] => {
                             return prepend(outputStack, {
                                 type: "number",
                                 value: 0,
-                                decimalPlace: 0
-                            } as NumberToken);
+                                decimalPlace: 0,
+                            } as NumberToken)
                         default:
-                            return prepend(outputStack, newToken);
+                            return prepend(outputStack, newToken)
                     }
             }
         };
-    };
+    }
 
     const outputStack = array
         // Explanation of reduce function is in ./Lib/ExpressionSolver/CreateTree (end of the file)
-        .reduce(mergeReducer, []);
+        .reduce(mergeReducer, [])
 
 
-    let lastToken = outputStack[0];
+    let lastToken = outputStack[0]
     if (lastToken) {
         if (lastToken.type === "number" && lastToken.decimalPlace !== undefined) {
             /**
@@ -233,13 +233,13 @@ const mergeNumbers = (array: Token[]): Token[] => {
              */
             lastToken = {
                 type: lastToken.type,
-                value: lastToken.value * 10 ** (-lastToken.decimalPlace)
-            };
+                value: lastToken.value * 10 ** (-lastToken.decimalPlace),
+            }
         }
     }
 
-    return outputStack.reverse();
-};
+    return outputStack.reverse()
+}
 
 
 
@@ -256,5 +256,5 @@ export const tokenize: (input: string) => Token[] =
     pipe(
         tokenizeSingleChars,
         resolveUnaryOperators,
-        mergeNumbers
-    );
+        mergeNumbers,
+    )

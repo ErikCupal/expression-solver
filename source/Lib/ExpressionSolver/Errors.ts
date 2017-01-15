@@ -7,4 +7,4 @@ export const Errors: {
         UNKNOWN_CHAR_ERROR: "Unknown character!",
         OPER_OR_NODE_ERROR: "Invalid operator or node!",
         TOKEN_ERROR: "Invalid token!",
-    };
+    }
