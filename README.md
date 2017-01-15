@@ -3,12 +3,15 @@
 ### A little set of functions for solving mathematical expressions
 ____________________________
 
+### Changelog
+
+* Added support for unary operators
+
 ## About
 
 This is a demo implementation of [infix](https://en.wikipedia.org/wiki/Infix_notation) expression solver.
-It supports operators +, -, *, /, ^, % and parentheses.
+It supports binary operators +, -, *, /, ^, %, unary operators +, - and parentheses.
 Other operators can be easily added.
-Unfortunately, it doesn't support [unary](https://en.wikipedia.org/wiki/Unary_operation) operators yet :/.
 It is written using functional Javascript.
 
 This repo was created for learning purposes.
@@ -40,7 +43,8 @@ We start with a expression, for example
 1. We transform each character into object with type (number, operator, number divider or parenthesis) and value.
 The token objects are stored in array.
 0. We throw away whitespaces.
-2. We merge consequent single numbers and number dividers (like `.` or `,`) into complete numbers.
+0. We check for unary operators and resolve them right away - e.g. `-5 * (-8)`
+0. We merge consequent single numbers and number dividers (like `.` or `,`) into complete numbers.
 
 We got tokenized array.
 

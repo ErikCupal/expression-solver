@@ -16,8 +16,6 @@ const {
 
 /**
  * Takes tokenized expression returns it back. Throws exception in case of syntax error.
- * 
- * *The implementation does not suppport unary operators and functions yet.*
  */
 export const checkSyntax = (tokens: Token[]): Token[] => {
 

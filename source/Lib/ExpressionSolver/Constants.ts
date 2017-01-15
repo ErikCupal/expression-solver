@@ -28,10 +28,11 @@ export type OperatorToken = {
     readonly type: "operator"
     readonly value: string
     readonly literalValue: string
-    readonly function: (a: number, b: number) => number
+    readonly function?: (a: number, b: number) => number
+    readonly unaryFunction?: (a: number) => number
     readonly precedance: 2 | 3 | 4
     readonly associativity: "left" | "right"
-    readonly associative?: true
+    readonly associative?: true,
 };
 
 export type ParenthesisToken = {
@@ -50,6 +51,13 @@ export type NumberToken = {
     readonly decimalPlace?: number
 };
 
+export type OperatorNames =
+"PLUS" |
+"MULTIPLY" |
+"MINUS" |
+"DIVIDE" |
+"REMAINDER" |
+"POWER";
 /**
  * Constant and readonly object of OperatorToken objects
  */
@@ -61,6 +69,7 @@ export const OperatorTokens: {
             value: "+",
             literalValue: "Add",
             function: (a, b) => a + b,
+            unaryFunction: a => a,
             precedance: 2,
             associativity: "left",
             associative: true,
@@ -79,6 +88,7 @@ export const OperatorTokens: {
             value: "-",
             literalValue: "Subtract",
             function: (a, b) => a - b,
+            unaryFunction: a => (-a),
             precedance: 2,
             associativity: "left",
         },
@@ -108,11 +118,14 @@ export const OperatorTokens: {
         },
     };
 
+export type ParenthesisNames =
+"LEFT_PAR" |
+"RIGHT_PAR";
 /**
  * Constant and readonly object of ParenthesisToken objects
  */
 export const ParenthesisTokens: {
-    readonly [K: string]: ParenthesisToken
+    readonly [K in ParenthesisNames]: ParenthesisToken
 } = {
         LEFT_PAR: {
             type: "parenthesis",
@@ -124,11 +137,14 @@ export const ParenthesisTokens: {
         },
     };
 
+export type NumberDividerNames =
+"COMMA" |
+"DOT";
 /**
  * Constant and readonly object of NumberDividerToken objects
  */
 export const NumberDividerTokens: {
-    readonly [K: string]: NumberDividerToken
+    readonly [K in NumberDividerNames]: NumberDividerToken
 } = {
         COMMA: {
             type: "numberDivider",
