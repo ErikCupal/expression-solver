@@ -92,8 +92,6 @@ The `=>`, `const`, `let`, `...`, `import`, `export`, `map`, `filter`, `reduce` a
 They allow to write more readable, safer and shorter code. ES6 also enables to split the code into several files (therefore the `import` and `export` keywords).
 If want, consider adopting at least some of the new concepts. All modern browsers support ES6 and it can be easily [polyfilled](https://en.wikipedia.org/wiki/Polyfill) for the older one (this project uses polyfill).
 
-
-
-
-
-
+You can pick up lots of them just by reading the code.
+One of the harder ones is destructuring (if you don't know).
+Take a look [here](http://es6-features.org/#ArrayMatching) to learn what it is about :).
