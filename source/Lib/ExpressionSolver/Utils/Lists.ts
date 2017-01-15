@@ -16,12 +16,10 @@ export const last = <T>(array: T[]): T | undefined =>
 export const head = <T>(array: T[]): T | undefined => array[0];
 
 /**
- * Returns the array without the first element
+ * Takes array, removes first element and returns the array
  * 
- * **Warning:** Unlike in most functional languages, the function mutates original array.
- * Use only for perfomance crutial tasks.
+ * **The function mutates original array.**
  * 
- * @param array The array.
  */
 export const tail = <T>(array: T[]): T[] => {
     array.shift();
@@ -29,12 +27,10 @@ export const tail = <T>(array: T[]): T[] => {
 };
 
 /**
- * Returns the array with the element(s) appended at the end
+ * Takes array, appends element(s) at the end and returns the array
  * 
- * **Warning:** Unlike in most functional languages, the function mutates original array.
- * Use only for perfomance crutial tasks.
- * 
- * @param elements New elements of the Array.
+ * **The function mutates original array.**
+ * .
  */
 export const append = <T>(array: T[], ...elements: T[]): T[] => {
     array.push(...elements);
@@ -42,12 +38,10 @@ export const append = <T>(array: T[], ...elements: T[]): T[] => {
 };
 
 /**
- * Returns the array with the element(s) appended at the beginning
+ * Takes array, appends element(s) at the beginning and returns the array
  * 
- * **Warning:** Unlike in most functional languages, the function mutates original array.
- * Use only for perfomance crutial tasks.
- * 
- * @param elements New elements of the Array.
+ * **The function mutates original array.**
+ * .
  */
 export const prepend = <T>(array: T[], ...elements: T[]): T[] => {
     array.unshift(...elements);

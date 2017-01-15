@@ -34,15 +34,15 @@ export const createTree = (postfixExpression: Token[]): Tree => {
                 // 2) create new node with the newToken as token and the two popped nodes (leaves) its leaves
                 // 3) push the new node on the stack
 
-                const x = stack.pop();
                 const y = stack.pop();
+                const x = stack.pop();
 
                 // Checks whether x and y exist
                 if (x && y) {
                     return append(stack, {
                         value: newToken,
-                        left: y,
-                        right: x
+                        left: x,
+                        right: y
                     });
                 } else {
                     // Impossible, can't happen
