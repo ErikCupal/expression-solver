@@ -146,7 +146,7 @@
 	/**
 	 * Resolves the infix notation expression into abstraction syntax tree.
 	 *
-	 * The expression can contain +, -, *, /, ^ operators and parentheses
+	 * The expression can contain operators and parentheses
 	 *
 	 * @param infixExpression An expression in infix notation
 	 * @returns Abstraction syntax tree
@@ -324,6 +324,16 @@
 	        literalValue: "Divide",
 	        function: function _function(a, b) {
 	            return a / b;
+	        },
+	        precedance: 3,
+	        associativity: "left"
+	    },
+	    REMAINDER: {
+	        type: "operator",
+	        value: "%",
+	        literalValue: "Remainder",
+	        function: function _function(a, b) {
+	            return a % b;
 	        },
 	        precedance: 3,
 	        associativity: "left"
