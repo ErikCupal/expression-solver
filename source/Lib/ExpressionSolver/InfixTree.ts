@@ -28,7 +28,7 @@ export const shouldParenthesize = (child: Operator, parent: Operator, nodeType: 
             return false;
         case child.precedance === parent.precedance:
 
-            // Special case - associative operators -> wiki
+            // Special case - associative operator -> (wiki)[https://en.wikipedia.org/wiki/Operator_associativity]
             if (parent.associative) {
                 return false;
             }
