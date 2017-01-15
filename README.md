@@ -71,11 +71,24 @@ We got the tree and we can
 
 ## Wait! What is this `ts` thing, what is `=>`, `const`, `...` and how come the code is split into several files??? I can't understand a thing!
 
+### Typescript
+
 `Ts` is [Typescript](https://www.typescriptlang.org/) filename extension.
 Typescript is a superset of Javascript, which adds **optional** support for static typing.
-But don't worry, you can still write your code as you are used to, because it's really just superset.
+Every time you see `: SomeType` (unless its property definition in
+[object literal](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Grammar_and_types#Object_literals)),
+you know it is a type annotation.
+The types can beeither `string`, `number`, `boolean`, `{}`, `[]` or custom typescreated using these basic types.
+Types are defined by `type` keyword.
+All types and type annotation are removed during transpilation, that's why Typescript is compatible with Javascript code
 
-The `=>`, `const`, `let`, `...`, `import`, `export`, `map`, `filter`, `reduce` are all the new features from [ES6](https://github.com/lukehoban/es6features) Javascript standard officialy published in 2015.
+But don't worry, you can still write your code as you are used to
+(as long as it's valid code, don't even try such a nastyness as `"5" * 3` :D),
+because it's really just superset.
+
+### ES6
+
+The `=>`, `const`, `let`, `...`, `import`, `export`, `map`, `filter`, `reduce` are all the new features from [ES6](https://github.com/lukehoban/es6features) (officialy named ECMAScript 2015) Javascript standard officialy published in 2015.
 They allow to write more readable, safer and shorter code. ES6 also enables to split the code into several files (therefore the `import` and `export` keywords).
 If want, consider adopting at least some of the new concepts. All modern browsers support ES6 and it can be easily [polyfilled](https://en.wikipedia.org/wiki/Polyfill) for the older one (this project uses polyfill).
 

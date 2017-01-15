@@ -33,6 +33,7 @@ export const shouldParenthesize = (child: Operator, parent: Operator, nodeType: 
                 return false;
             }
 
+            // Read about operator associativity on (wiki)[https://en.wikipedia.org/wiki/Operator_associativity]
             switch (nodeType) {
                 case LEFT:
                     switch (child.associativity) {
@@ -56,6 +57,8 @@ export const shouldParenthesize = (child: Operator, parent: Operator, nodeType: 
  * *The implementation does not suppport unary operators and functions yet.*
  */
 export const infixTree = (
+    // Create vars value, left and right from the first parameter
+    // This notation is ES6 Destructuring
     { value, left, right }: Tree,
     parentOp?: Operator,
     nodeType?: NodeType

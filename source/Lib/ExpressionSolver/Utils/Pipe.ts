@@ -11,6 +11,12 @@ const combine = (param: any, funcs: Array<(param: any) => any>): any =>
 const untypedPipe = (...funcs: Array<(param: any) => any>) =>
     (param: any) => combine(param, funcs);
 
+/**
+ * We're creating 20 diferent Typescript overloads in order to support proper typechecking.
+ * Unfortunately Typescript doesn't have any other reasonable way to do it now,
+ * we got to type it manually. Typechecking is limited for first 19 overloads,
+ * there is not much chance you would need more.
+ */
 class PipeClass {
 
     // 2 - 5

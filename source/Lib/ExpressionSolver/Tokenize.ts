@@ -9,7 +9,7 @@ import {
     Token
 } from "./Constants";
 import { Errors } from "./Errors";
-import { head, prepend, tail } from "./Utils/Lists";
+import { prepend } from "./Utils/Lists";
 import { pipe } from "./Utils/Pipe";
 import { isInteger, isWhitespace } from "./Utils/TypeGuards";
 
@@ -27,6 +27,7 @@ const {
  */
 const tokenizeSingleChars = (input: string): Token[] => {
     return Array.from(input)
+        // transfroms each character into Token object
         .map(char => {
             switch (true) {
                 case isInteger(char):
@@ -46,6 +47,7 @@ const tokenizeSingleChars = (input: string): Token[] => {
                     throw UNKNOWN_CHAR_ERROR;
             }
         })
+        // filter out undefines (the whitespaces)
         .filter(token => token) as Token[];
 };
 
@@ -55,17 +57,33 @@ const tokenizeSingleChars = (input: string): Token[] => {
  */
 const mergeNumbers = (array: Token[]): Token[] => {
 
-    const mergeReducer = (array: Token[], newToken: Token): Token[] => {
-        const lastToken = head(array);
+    /**
+     * Takes stack of Tokens (array) and new token
+     * 
+     * Returns modified stack
+     * 
+     * Read below how reduce function works :)
+     */
+    const mergeReducer = (outputStack: Token[], newToken: Token): Token[] => {
+
+        // Take first token from the stack
+        const [lastToken] = outputStack;
 
         if (lastToken === undefined) {
+            // We're at the beginning of the array
+
             switch (newToken.type) {
                 case "number":
-                    return [{
-                        type: newToken.type,
-                        value: newToken.value,
-                    }];
+                    /**
+                     * Hmm number, just create array with this it
+                     */
+                    return [newToken];
                 case "numberDivider":
+                    /**
+                     * It's possible it can be like .3 -> 0.3
+                     * We create a number from it and we mark it's
+                     * a decimal by setting decimalPlace to 0
+                     */
                     return [{
                         type: "number",
                         value: 0,
@@ -76,16 +94,21 @@ const mergeNumbers = (array: Token[]): Token[] => {
             }
         } else {
 
-            // We don't want to get the rest off the array until it's really necessary
-            // because *tail* function is mutative and pops values from the array
-            // even if it was not actually used.
-            const rest = () => tail(array);
-
             switch (lastToken.type) {
                 case "number":
+
+                    // We throw away the first element from the array
+                    // because we need to replace it with another token
+                    outputStack.shift();
+
                     switch (newToken.type) {
                         case "number":
-                            return prepend(rest(), {
+                            /**
+                             * Two numbers
+                             * Let's multiply the previous number by 10 and add them together
+                             * If it is decimal increase the decimalPlace property
+                             */
+                            return prepend(outputStack, {
                                 type: lastToken.type,
                                 value: lastToken.value * 10 + newToken.value,
                                 decimalPlace: (typeof lastToken.decimalPlace === "number")
@@ -93,73 +116,82 @@ const mergeNumbers = (array: Token[]): Token[] => {
                                     : undefined
                             });
                         case "numberDivider":
-                            return prepend(rest(), {
+                            /**
+                             * e.g 4562.
+                             * We set decimalPlace to 0 to mark it's a decimal
+                             */
+                            return prepend(outputStack, {
                                 type: lastToken.type,
                                 value: lastToken.value,
                                 decimalPlace: 0
                             });
                         default:
-                            return prepend(rest(), newToken, {
-                                type: lastToken.type,
-                                value: (typeof lastToken.decimalPlace === "number")
-                                    ? lastToken.value * 10 ** (-lastToken.decimalPlace)
-                                    : lastToken.value,
-                                decimalPlace: undefined
-                            });
+                            switch (lastToken.decimalPlace !== undefined) {
+                                case true:
+                                    /**
+                                     * In case the number is decimal
+                                     *      shift the number by decimalPlace number
+                                     */
+                                    return prepend(outputStack, newToken, {
+                                        type: lastToken.type,
+                                        value: lastToken.value * 10 ** (-lastToken.decimalPlace)
+                                    });
+                                default:
+                                    return prepend(outputStack, newToken, lastToken);
+                            }
                     }
                 default:
                     switch (newToken.type) {
                         case "number":
-                            return prepend(rest(), {
+                            // We're creating new NumberToken object in order to get rid of the helper
+                            // decimalPlace: undefined property
+                            return prepend(outputStack, {
                                 type: newToken.type,
                                 value: newToken.value,
-                            }, lastToken);
+                            });
                         case "numberDivider":
-                            return prepend(rest(), {
+                            /**
+                             * e.g. last = *, new = .
+                             * It's possible it can be like .3 -> 0.3
+                             * We create a number from it and we mark it's
+                             * a decimal by setting decimalPlace to 0
+                             */
+                            return prepend(outputStack, {
                                 type: "number",
                                 value: 0,
                                 decimalPlace: 0
-                            } as NumberToken, lastToken);
+                            } as NumberToken);
                         default:
-                            return prepend(rest(), newToken, lastToken);
+                            return prepend(outputStack, newToken);
                     }
             }
         };
     };
 
-    const convertLastNumberIfPresent = (token: Token) => {
-        switch (token.type) {
-            case "number":
-                return {
-                    type: token.type,
-                    value: (typeof token.decimalPlace === "number")
-                        ? token.value * 10 ** (-token.decimalPlace)
-                        : token.value,
-                    decimalPlace: undefined
-                };
-            default:
-                return token;
-        }
-    };
+    const outputStack = array
+        // Explanation of reduce function is in ./Lib/ExpressionSolver/CreateTree (end of the file)
+        .reduce(mergeReducer, []);
 
-    const removeDecimalPlaceProperty = (token: Token) => {
-        switch (token.type) {
-            case "number":
-                return {
-                    type: token.type,
-                    value: token.value
-                };
-            default:
-                return token;
-        }
-    };
 
-    return array
-        .reduce(mergeReducer, [])
-        .map(convertLastNumberIfPresent)
-        .map(removeDecimalPlaceProperty)
-        .reverse();
+    let lastToken = outputStack[0];
+    if (lastToken) {
+        if (lastToken.type === "number" && lastToken.decimalPlace !== undefined) {
+            /**
+             * In case the number is decimal
+             *      shift the number by decimalPlace number
+             */
+            lastToken = {
+                type: lastToken.type,
+                value: lastToken.value * 10 ** (-lastToken.decimalPlace)
+            };
+        }
+    }
+
+    return outputStack.reverse();
 };
+
+
+
 
 /**
  * Takes an expression. Returns tokenized expression.
@@ -167,6 +199,11 @@ const mergeNumbers = (array: Token[]): Token[] => {
  * *The implementation does not suppport unary operators and functions yet.*
  */
 export const tokenize: (input: string) => Token[] =
+    /**
+     * For explanation of the pipe function refer to
+     *      Documentation in ./Lib/ExpressionSolver/Pipe
+     *      Or better here :) http://vanslaars.io/post/create-pipe-function/
+     */
     pipe(
         tokenizeSingleChars,
         mergeNumbers

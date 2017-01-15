@@ -71,6 +71,15 @@
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+	/**
+	 * li, ul, p, div... functions create HTML in string format
+	 * They accept variable number of parameters - children
+	 * If the first parameter is array, it is considered as array of tag attributes.
+	 *
+	 * id, type, value... functions create HTML attributes, e.g id("container") => `id="container"`
+	 *
+	 * render method simply sets innerHTML of HTML element
+	 */
 	// Initial render
 	var page = (0, _Html.div)((0, _Html.h1)("Expression solver"), (0, _Html.input)([(0, _HtmlAttributes.id)("exprInput"), (0, _HtmlAttributes.type)("text"), (0, _HtmlAttributes.value)("")]), (0, _Html.div)([(0, _HtmlAttributes.id)("outputElement")]));
 	(0, _Html.render)(page, Dom.byId("root"));
@@ -78,6 +87,7 @@
 	var inputElement = Dom.byId("exprInput");
 	var outputElement = Dom.byId("outputElement");
 	inputElement.addEventListener("input", function (e) {
+	    // Get the input expression
 	    var expr = e.target.value;
 	    if (expr !== "") {
 	        try {
@@ -141,7 +151,13 @@
 	 * @param infixExpression An expression in infix notation
 	 * @returns Abstraction syntax tree
 	 */
-	var createTreeFromExpression = exports.createTreeFromExpression = (0, _Pipe.pipe)(_Tokenize.tokenize, _CheckSyntax.checkSyntax, _Postfix.postfix, _CreateTree.createTree);
+	var createTreeFromExpression =
+	/**
+	 * For explanation of the pipe function refer to
+	 *      Documentation in ./Lib/ExpressionSolver/Pipe
+	 *      Or better here :) http://vanslaars.io/post/create-pipe-function/
+	 */
+	exports.createTreeFromExpression = (0, _Pipe.pipe)(_Tokenize.tokenize, _CheckSyntax.checkSyntax, _Postfix.postfix, _CreateTree.createTree);
 
 /***/ },
 /* 4 */
@@ -174,18 +190,27 @@
 	 * *The implementation does not suppport unary operators and functions yet.*
 	 */
 
-	var checkSyntax = exports.checkSyntax = function checkSyntax(array) {
-	    var syntaxCheckReducer = function syntaxCheckReducer(array, newToken) {
-	        var _array = _slicedToArray(array, 1),
-	            lastToken = _array[0];
+	var checkSyntax = exports.checkSyntax = function checkSyntax(tokens) {
+	    /**
+	     * Takes stack of Tokens (array) and new token
+	     *
+	     * Returns modified stack
+	     *
+	     * Read below how reduce function works :)
+	     */
+	    var syntaxCheckReducer = function syntaxCheckReducer(stack, newToken) {
+	        // Takes the first element from the stack
+	        var _stack = _slicedToArray(stack, 1),
+	            lastToken = _stack[0];
 
 	        if (lastToken === undefined) {
-	            // The array is empty - we're at the beginning of reduce function
+	            // The stack is empty - we're at the beginning of the reduce function
 	            switch (newToken.type) {
 	                case "operator":
 	                    // Operator can't be at the beginning of the expression
 	                    throw OPERATORS_ERROR;
 	            }
+	            // Return new stack array with the new token
 	            return [newToken];
 	        } else {
 	            switch (lastToken.type) {
@@ -233,16 +258,18 @@
 	                    }
 	                    break;
 	            }
-	            return (0, _Lists.prepend)(array, newToken);
+	            // Add new token at the beginning of the stack 
+	            return (0, _Lists.prepend)(stack, newToken);
 	        }
 	    };
-	    var checked = array.reduce(syntaxCheckReducer, []).reverse();
+	    var checked = tokens.reduce(syntaxCheckReducer, []).reverse();
 	    var lastTokenInArray = (0, _Lists.last)(checked);
 	    if (lastTokenInArray && lastTokenInArray.type === "operator") {
 	        // Operator can't be at the end of the expression
 	        throw OPERATORS_ERROR;
 	    }
-	    return checked;
+	    // Everything is fine, return the original array
+	    return tokens;
 	};
 
 /***/ },
@@ -254,6 +281,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+	// Typescript types, used for proper typechecking
 	/**
 	 * Constant and readonly object of OperatorToken objects
 	 */
@@ -261,6 +289,7 @@
 	    PLUS: {
 	        type: "operator",
 	        value: "+",
+	        literalValue: "Add",
 	        function: function _function(a, b) {
 	            return a + b;
 	        },
@@ -271,6 +300,7 @@
 	    MULTIPLY: {
 	        type: "operator",
 	        value: "*",
+	        literalValue: "Multiply",
 	        function: function _function(a, b) {
 	            return a * b;
 	        },
@@ -281,6 +311,7 @@
 	    MINUS: {
 	        type: "operator",
 	        value: "-",
+	        literalValue: "Subtract",
 	        function: function _function(a, b) {
 	            return a - b;
 	        },
@@ -290,6 +321,7 @@
 	    DIVIDE: {
 	        type: "operator",
 	        value: "/",
+	        literalValue: "Divide",
 	        function: function _function(a, b) {
 	            return a / b;
 	        },
@@ -299,6 +331,7 @@
 	    POWER: {
 	        type: "operator",
 	        value: "^",
+	        literalValue: "Power",
 	        function: function _function(a, b) {
 	            return Math.pow(a, b);
 	        },
@@ -443,24 +476,20 @@
 	  return array[0];
 	};
 	/**
-	 * Returns the array without the first element
+	 * Takes array, removes first element and returns the array
 	 *
-	 * **Warning:** Unlike in most functional languages, the function mutates original array.
-	 * Use only for perfomance crutial tasks.
+	 * **The function mutates original array.**
 	 *
-	 * @param array The array.
 	 */
 	var tail = exports.tail = function tail(array) {
 	  array.shift();
 	  return array;
 	};
 	/**
-	 * Returns the array with the element(s) appended at the end
+	 * Takes array, appends element(s) at the end and returns the array
 	 *
-	 * **Warning:** Unlike in most functional languages, the function mutates original array.
-	 * Use only for perfomance crutial tasks.
-	 *
-	 * @param elements New elements of the Array.
+	 * **The function mutates original array.**
+	 * .
 	 */
 	var append = exports.append = function append(array) {
 	  for (var _len = arguments.length, elements = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -471,12 +500,10 @@
 	  return array;
 	};
 	/**
-	 * Returns the array with the element(s) appended at the beginning
+	 * Takes array, appends element(s) at the beginning and returns the array
 	 *
-	 * **Warning:** Unlike in most functional languages, the function mutates original array.
-	 * Use only for perfomance crutial tasks.
-	 *
-	 * @param elements New elements of the Array.
+	 * **The function mutates original array.**
+	 * .
 	 */
 	var prepend = exports.prepend = function prepend(array) {
 	  for (var _len2 = arguments.length, elements = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
@@ -489,17 +516,16 @@
 
 /***/ },
 /* 8 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+	exports.createTree = undefined;
 
-	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-	function _toArray(arr) { return Array.isArray(arr) ? arr : Array.from(arr); }
+	var _Lists = __webpack_require__(7);
 
 	/**
 	 * Takes a postfix expression and returns an abstraction syntax tree.
@@ -510,37 +536,67 @@
 	 * *The implementation does not suppport unary operators and functions yet.*
 	 */
 	var createTree = exports.createTree = function createTree(postfixExpression) {
+	    /**
+	     * Takes stack of Nodes or Leaves (array) and new token
+	     *
+	     * Returns modified stack
+	     *
+	     * Read below how reduce function works :)
+	     */
 	    var reducer = function reducer(stack, newToken) {
-	        var _stack = _toArray(stack),
-	            x = _stack[0],
-	            y = _stack[1],
-	            xs = _stack.slice(2);
-
 	        switch (newToken.type) {
 	            case "number":
-	                // In case the new token is a number, push it to the stack
-	                return [{
+	                // In case the new token is a number, push it onto the stack
+	                return (0, _Lists.append)(stack, {
 	                    value: newToken,
 	                    left: undefined,
 	                    right: undefined
-	                }].concat(_toConsumableArray(stack));
+	                });
 	            case "operator":
 	                // In case the new token is operator
-	                // 1) pop two nodes of the stack
-	                // 2) create new node with the newToken as token and the two popped nodes as leaves
+	                // 1) pop two nodes or leaves of the stack
+	                // 2) create new node with the newToken as token and the two popped nodes (leaves) its leaves
 	                // 3) push the new node on the stack
-	                return [{
-	                    value: newToken,
-	                    left: y,
-	                    right: x
-	                }].concat(_toConsumableArray(xs));
+	                var y = stack.pop();
+	                var x = stack.pop();
+	                // Checks whether x and y exist
+	                if (x && y) {
+	                    return (0, _Lists.append)(stack, {
+	                        value: newToken,
+	                        left: x,
+	                        right: y
+	                    });
+	                } else {
+	                    // Impossible, can't happen
+	                    throw "Error ocurred while creating the tree";
+	                }
 	            default:
 	                throw "Invalid token!";
 	        }
 	    };
+	    /**
+	     * Reduce function (method of Array object) does this:
+	     *
+	     * It takes a function as first parameter
+	     *
+	     * It iterates over the array and calls the function on each iteration
+	     *      It provides the function two parameters
+	     *          1) accumulated value <- read below
+	     *          2) new value from the array
+	     *      The function returns something - the something will be passed as the accumulated value during next iteration
+	     * After the iteration finished, it returns the accumulated value
+	     *
+	     * In this case the accumulated value is our stack
+	     *
+	     * On the very first iteration there is no accumulated value - we must provide initial value to the reduce function
+	     *      In this case: empty array [] -----------
+	     *                                              |
+	     *                                              |
+	     */
 	    var stack = postfixExpression.reduce(reducer, []);
 	    switch (stack.length) {
 	        case 1:
+	            // There must be only one value on the stack - the completed tree
 	            return stack[0];
 	        default:
 	            throw "Error ocurred while creating the tree";
@@ -580,21 +636,23 @@
 	var postfix = exports.postfix = function postfix(infixTokens) {
 	    var processOperator = function processOperator(_ref, currOp) {
 	        var _ref2 = _slicedToArray(_ref, 2),
-	            output = _ref2[0],
+	            outputStack = _ref2[0],
 	            specialTokenStack = _ref2[1];
 
+	        // Take last operator from the array
 	        var _specialTokenStack = _slicedToArray(specialTokenStack, 1),
 	            lastOp = _specialTokenStack[0];
 
 	        if (lastOp === undefined) {
-	            return [output, [currOp]];
+	            return [outputStack, [currOp]];
 	        } else {
 	            var meetsAlgorithmConditions = lastOp.type === "operator" && (currOp.associativity === "left" && currOp.precedance <= lastOp.precedance || currOp.associativity === "right" && currOp.precedance < lastOp.precedance);
 	            switch (true) {
 	                case meetsAlgorithmConditions:
-	                    return processOperator([(0, _Lists.append)(output, lastOp), (0, _Lists.tail)(specialTokenStack)], currOp);
+	                    specialTokenStack.shift();
+	                    return processOperator([(0, _Lists.append)(outputStack, lastOp), specialTokenStack], currOp);
 	                default:
-	                    return [output, (0, _Lists.prepend)(specialTokenStack, currOp)];
+	                    return [outputStack, (0, _Lists.prepend)(specialTokenStack, currOp)];
 	            }
 	        }
 	    };
@@ -603,21 +661,20 @@
 	            output = _ref4[0],
 	            specialTokenStack = _ref4[1];
 
-	        var _specialTokenStack2 = _slicedToArray(specialTokenStack, 1),
-	            lastParenthesis = _specialTokenStack2[0];
-
-	        if (lastParenthesis === undefined) {
+	        var lastToken = specialTokenStack.shift();
+	        if (lastToken === undefined) {
+	            // There must be some token on the stack if there is unmatched right parenthesis
 	            throw PARENTHESES_ERROR;
 	        } else {
-	            switch (lastParenthesis) {
+	            switch (lastToken) {
 	                case LEFT_PAR:
-	                    return [output, (0, _Lists.tail)(specialTokenStack)];
+	                    return [output, specialTokenStack];
 	                default:
-	                    return processRightParenthesis([(0, _Lists.append)(output, lastParenthesis), (0, _Lists.tail)(specialTokenStack)]);
+	                    return processRightParenthesis([(0, _Lists.append)(output, lastToken), specialTokenStack]);
 	            }
 	        }
 	    };
-	    var processRemainingTokensOnStack = function processRemainingTokensOnStack(_ref5) {
+	    var processSpecialTokensStack = function processSpecialTokensStack(_ref5) {
 	        var _ref6 = _slicedToArray(_ref5, 2),
 	            output = _ref6[0],
 	            specialTokens = _ref6[1];
@@ -630,12 +687,24 @@
 	                    return token.type === "parenthesis";
 	                });
 	                if (parenthesisToken) {
+	                    // There can't be any parenthesis on the specialTokens stack in this moment
 	                    throw PARENTHESES_ERROR;
-	                } else {
-	                    return output.concat(specialTokens);
 	                }
+	                // create new array
+	                //      output with appended specialTokens stack at the end of the putput
+	                return output.concat(specialTokens);
 	        }
 	    };
+	    /**
+	     * The algorith is described [here](https://en.wikipedia.org/wiki/Shunting-yard_algorithm).
+	     *
+	     *
+	     * Takes stack of Tokens (array) and new token
+	     *
+	     * Returns modified stack
+	     *
+	     * Read below how reduce function works :)
+	     */
 	    var reducer = function reducer(_ref7, a) {
 	        var _ref8 = _slicedToArray(_ref7, 2),
 	            output = _ref8[0],
@@ -676,8 +745,9 @@
 	            }
 	        }
 	    };
-	    var reduced = infixTokens.reduce(reducer, [[], []]);
-	    return processRemainingTokensOnStack(reduced);
+	    // Explanation of reduce function is in ./Lib/ExpressionSolver/CreateTree (end of the file)
+	    var stacks = infixTokens.reduce(reducer, [[], []]);
+	    return processSpecialTokensStack(stacks);
 	};
 
 /***/ },
@@ -690,6 +760,8 @@
 	    value: true
 	});
 	exports.tokenize = undefined;
+
+	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
 	var _Constants = __webpack_require__(5);
 
@@ -739,16 +811,32 @@
 	 * Returns tokenized expression with merged single digits NumberTokens into complete number NumberTokes.
 	 */
 	var mergeNumbers = function mergeNumbers(array) {
-	    var mergeReducer = function mergeReducer(array, newToken) {
-	        var lastToken = (0, _Lists.head)(array);
+	    /**
+	     * Takes stack of Tokens (array) and new token
+	     *
+	     * Returns modified stack
+	     *
+	     * Read below how reduce function works :)
+	     */
+	    var mergeReducer = function mergeReducer(outputStack, newToken) {
+	        // Take first token from the stack
+	        var _outputStack = _slicedToArray(outputStack, 1),
+	            lastToken = _outputStack[0];
+
 	        if (lastToken === undefined) {
+	            // We're at the beginning of the array
 	            switch (newToken.type) {
 	                case "number":
-	                    return [{
-	                        type: newToken.type,
-	                        value: newToken.value
-	                    }];
+	                    /**
+	                     * Hmm number, just create array with this it
+	                     */
+	                    return [newToken];
 	                case "numberDivider":
+	                    /**
+	                     * It's possible it can be like .3 -> 0.3
+	                     * We create a number from it and we mark it's
+	                     * a decimal by setting decimalPlace to 0
+	                     */
 	                    return [{
 	                        type: "number",
 	                        value: 0,
@@ -758,85 +846,104 @@
 	                    return [newToken];
 	            }
 	        } else {
-	            // We don't want to get the rest off the array until it's really necessary
-	            // because *tail* function is mutative and pops values from the array
-	            // even if it was not actually used.
-	            var rest = function rest() {
-	                return (0, _Lists.tail)(array);
-	            };
 	            switch (lastToken.type) {
 	                case "number":
+	                    // We throw away the first element from the array
+	                    // because we need to replace it with another token
+	                    outputStack.shift();
 	                    switch (newToken.type) {
 	                        case "number":
-	                            return (0, _Lists.prepend)(rest(), {
+	                            /**
+	                             * Two numbers
+	                             * Let's multiply the previous number by 10 and add them together
+	                             * If it is decimal increase the decimalPlace property
+	                             */
+	                            return (0, _Lists.prepend)(outputStack, {
 	                                type: lastToken.type,
 	                                value: lastToken.value * 10 + newToken.value,
 	                                decimalPlace: typeof lastToken.decimalPlace === "number" ? lastToken.decimalPlace + 1 : undefined
 	                            });
 	                        case "numberDivider":
-	                            return (0, _Lists.prepend)(rest(), {
+	                            /**
+	                             * e.g 4562.
+	                             * We set decimalPlace to 0 to mark it's a decimal
+	                             */
+	                            return (0, _Lists.prepend)(outputStack, {
 	                                type: lastToken.type,
 	                                value: lastToken.value,
 	                                decimalPlace: 0
 	                            });
 	                        default:
-	                            return (0, _Lists.prepend)(rest(), newToken, {
-	                                type: lastToken.type,
-	                                value: typeof lastToken.decimalPlace === "number" ? lastToken.value * Math.pow(10, -lastToken.decimalPlace) : lastToken.value,
-	                                decimalPlace: undefined
-	                            });
+	                            switch (lastToken.decimalPlace !== undefined) {
+	                                case true:
+	                                    /**
+	                                     * In case the number is decimal
+	                                     *      shift the number by decimalPlace number
+	                                     */
+	                                    return (0, _Lists.prepend)(outputStack, newToken, {
+	                                        type: lastToken.type,
+	                                        value: lastToken.value * Math.pow(10, -lastToken.decimalPlace)
+	                                    });
+	                                default:
+	                                    return (0, _Lists.prepend)(outputStack, newToken, lastToken);
+	                            }
 	                    }
 	                default:
 	                    switch (newToken.type) {
 	                        case "number":
-	                            return (0, _Lists.prepend)(rest(), {
+	                            // We're creating new NumberToken object in order to get rid of the helper
+	                            // decimalPlace: undefined property
+	                            return (0, _Lists.prepend)(outputStack, {
 	                                type: newToken.type,
 	                                value: newToken.value
-	                            }, lastToken);
+	                            });
 	                        case "numberDivider":
-	                            return (0, _Lists.prepend)(rest(), {
+	                            /**
+	                             * e.g. last = *, new = .
+	                             * It's possible it can be like .3 -> 0.3
+	                             * We create a number from it and we mark it's
+	                             * a decimal by setting decimalPlace to 0
+	                             */
+	                            return (0, _Lists.prepend)(outputStack, {
 	                                type: "number",
 	                                value: 0,
 	                                decimalPlace: 0
-	                            }, lastToken);
+	                            });
 	                        default:
-	                            return (0, _Lists.prepend)(rest(), newToken, lastToken);
+	                            return (0, _Lists.prepend)(outputStack, newToken);
 	                    }
 	            }
 	        }
 	        ;
 	    };
-	    var convertLastNumberIfPresent = function convertLastNumberIfPresent(token) {
-	        switch (token.type) {
-	            case "number":
-	                return {
-	                    type: token.type,
-	                    value: typeof token.decimalPlace === "number" ? token.value * Math.pow(10, -token.decimalPlace) : token.value,
-	                    decimalPlace: undefined
-	                };
-	            default:
-	                return token;
+	    var outputStack = array.reduce(mergeReducer, []);
+	    var lastToken = outputStack[0];
+	    if (lastToken) {
+	        if (lastToken.type === "number" && lastToken.decimalPlace !== undefined) {
+	            /**
+	             * In case the number is decimal
+	             *      shift the number by decimalPlace number
+	             */
+	            lastToken = {
+	                type: lastToken.type,
+	                value: lastToken.value * Math.pow(10, -lastToken.decimalPlace)
+	            };
 	        }
-	    };
-	    var removeDecimalPlaceProperty = function removeDecimalPlaceProperty(token) {
-	        switch (token.type) {
-	            case "number":
-	                return {
-	                    type: token.type,
-	                    value: token.value
-	                };
-	            default:
-	                return token;
-	        }
-	    };
-	    return array.reduce(mergeReducer, []).map(convertLastNumberIfPresent).map(removeDecimalPlaceProperty).reverse();
+	    }
+	    return outputStack.reverse();
 	};
 	/**
 	 * Takes an expression. Returns tokenized expression.
 	 *
 	 * *The implementation does not suppport unary operators and functions yet.*
 	 */
-	var tokenize = exports.tokenize = (0, _Pipe.pipe)(tokenizeSingleChars, mergeNumbers);
+	var tokenize =
+	/**
+	 * For explanation of the pipe function refer to
+	 *      Documentation in ./Lib/ExpressionSolver/Pipe
+	 *      Or better here :) http://vanslaars.io/post/create-pipe-function/
+	 */
+	exports.tokenize = (0, _Pipe.pipe)(tokenizeSingleChars, mergeNumbers);
 
 /***/ },
 /* 11 */
@@ -845,7 +952,7 @@
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
-	    value: true
+	  value: true
 	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -853,53 +960,59 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var combineReducer = function combineReducer(param, func) {
-	    return func(param);
+	  return func(param);
 	};
 	var combine = function combine(param, funcs) {
-	    return funcs.reduce(combineReducer, param);
+	  return funcs.reduce(combineReducer, param);
 	};
 	/**
 	 * Takes variable number of functions which take one parameter. Returns a function,
 	 * which is their sequenced combination. The returned function takes one parameter.
 	 */
 	var untypedPipe = function untypedPipe() {
-	    for (var _len = arguments.length, funcs = Array(_len), _key = 0; _key < _len; _key++) {
-	        funcs[_key] = arguments[_key];
-	    }
+	  for (var _len = arguments.length, funcs = Array(_len), _key = 0; _key < _len; _key++) {
+	    funcs[_key] = arguments[_key];
+	  }
 
-	    return function (param) {
-	        return combine(param, funcs);
-	    };
+	  return function (param) {
+	    return combine(param, funcs);
+	  };
 	};
+	/**
+	 * We're creating 20 diferent Typescript overloads in order to support proper typechecking.
+	 * Unfortunately Typescript doesn't have any other reasonable way to do it now,
+	 * we got to type it manually. Typechecking is limited for first 19 overloads,
+	 * there is not much chance you would need more.
+	 */
 
 	var PipeClass = function () {
-	    function PipeClass() {
-	        _classCallCheck(this, PipeClass);
+	  function PipeClass() {
+	    _classCallCheck(this, PipeClass);
+	  }
+
+	  _createClass(PipeClass, null, [{
+	    key: "typedPipe",
+
+	    // The actual method
+	    /**
+	     * Takes variable number of functions which take one parameter. Returns a function,
+	     * which is their sequenced combination. The returned function takes one parameter.
+	     */
+	    value: function typedPipe(f1, f2) {
+	      for (var _len2 = arguments.length, fnArray = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
+	        fnArray[_key2 - 2] = arguments[_key2];
+	      }
+
+	      switch (true) {
+	        case fnArray.length >= 1:
+	          return untypedPipe.apply(undefined, [f1, f2].concat(fnArray));
+	        default:
+	          return untypedPipe(f1, f2);
+	      }
 	    }
+	  }]);
 
-	    _createClass(PipeClass, null, [{
-	        key: "typedPipe",
-
-	        // The actual method
-	        /**
-	         * Takes variable number of functions which take one parameter. Returns a function,
-	         * which is their sequenced combination. The returned function takes one parameter.
-	         */
-	        value: function typedPipe(f1, f2) {
-	            for (var _len2 = arguments.length, fnArray = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
-	                fnArray[_key2 - 2] = arguments[_key2];
-	            }
-
-	            switch (true) {
-	                case fnArray.length >= 1:
-	                    return untypedPipe.apply(undefined, [f1, f2].concat(fnArray));
-	                default:
-	                    return untypedPipe(f1, f2);
-	            }
-	        }
-	    }]);
-
-	    return PipeClass;
+	  return PipeClass;
 	}();
 	/**
 	 * Takes variable number of functions which take one parameter. Returns a function,
@@ -968,10 +1081,11 @@
 	        case child.precedance > parent.precedance:
 	            return false;
 	        case child.precedance === parent.precedance:
-	            // Special case - associative operators -> wiki
-	            if (child.associative && parent.associative) {
+	            // Special case - associative operator -> (wiki)[https://en.wikipedia.org/wiki/Operator_associativity]
+	            if (parent.associative) {
 	                return false;
 	            }
+	            // Read about operator associativity on (wiki)[https://en.wikipedia.org/wiki/Operator_associativity]
 	            switch (nodeType) {
 	                case LEFT:
 	                    switch (child.associativity) {
@@ -996,7 +1110,10 @@
 	 *
 	 * *The implementation does not suppport unary operators and functions yet.*
 	 */
-	var infixTree = exports.infixTree = function infixTree(_ref, parentOp, nodeType) {
+	var infixTree = exports.infixTree = function infixTree(
+	// Create vars value, left and right from the first parameter
+	// This notation is ES6 Destructuring
+	_ref, parentOp, nodeType) {
 	    var value = _ref.value,
 	        left = _ref.left,
 	        right = _ref.right;
@@ -1033,8 +1150,6 @@
 	});
 	exports.printTree = undefined;
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 	var _Html = __webpack_require__(15);
 
 	/**
@@ -1047,45 +1162,24 @@
 	        left = _ref.left,
 	        right = _ref.right;
 
-	    var _ret = function () {
-	        switch (value.type) {
-	            case "number":
-	                return {
-	                    v: (0, _Html.li)(value.value.toString())
-	                };
-	            case "operator":
-	                var operator = value;
-	                var literalValue = function () {
-	                    switch (operator.value) {
-	                        case "+":
-	                            return "Add";
-	                        case "-":
-	                            return "Subtract";
-	                        case "*":
-	                            return "Multiply";
-	                        case "/":
-	                            return "Divide";
-	                        case "^":
-	                            return "Power";
-	                        default:
-	                            return operator.value;
-	                    }
-	                }();
-	                if (left && right) {
-	                    return {
-	                        v: (0, _Html.li)(literalValue, (0, _Html.ul)(printTree(left), printTree(right)))
-	                    };
-	                } else if (left || right) {
-	                    throw "Unary operators not yet implemented!";
-	                } else {
-	                    throw "Tree error!";
-	                }
-	            default:
-	                throw "Unknown token!";
-	        }
-	    }();
-
-	    if ((typeof _ret === "undefined" ? "undefined" : _typeof(_ret)) === "object") return _ret.v;
+	    switch (value.type) {
+	        case "number":
+	            // li simply creates string "<li>" + children + "</li>"
+	            return (0, _Html.li)(value.value.toString());
+	        case "operator":
+	            var operator = value;
+	            if (left && right) {
+	                // li simply creates string "<li>" + children + "</li>"
+	                // ul simply creates string "<ul>" + children + "</ul>"
+	                return (0, _Html.li)(operator.literalValue, (0, _Html.ul)(printTree(left), printTree(right)));
+	            } else if (left || right) {
+	                throw "Unary operators not yet implemented!";
+	            } else {
+	                throw "Tree error!";
+	            }
+	        default:
+	            throw "Unknown token!";
+	    }
 	};
 
 /***/ },
@@ -1169,15 +1263,6 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	var nodeSolve = function nodeSolve(operator, left, right) {
-	    if (left && right) {
-	        return operator.function(solveTree(left), solveTree(right));
-	    } else if (left || right) {
-	        throw "Unary operators not yet implemented!";
-	    } else {
-	        throw "Tree error!";
-	    }
-	};
 	/**
 	 * Solves an abstraction syntax tree.
 	 *
@@ -1194,6 +1279,8 @@
 	        case "operator":
 	            if (left && right) {
 	                var operator = value;
+	                // Apply operator's function on left and right leaves
+	                // and return the result
 	                return operator.function(solveTree(left), solveTree(right));
 	            } else if (left || right) {
 	                throw "Unary operators not yet implemented!";

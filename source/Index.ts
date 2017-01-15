@@ -6,6 +6,16 @@ import { solveTree } from "./Lib/ExpressionSolver/SolveTree";
 import { div, h1, input, p, render, span, ul } from "./Lib/Html";
 import { id, type, value } from "./Lib/HtmlAttributes";
 
+/**
+ * li, ul, p, div... functions create HTML in string format
+ * They accept variable number of parameters - children
+ * If the first parameter is array, it is considered as array of tag attributes.
+ * 
+ * id, type, value... functions create HTML attributes, e.g id("container") => `id="container"`
+ * 
+ * render method simply sets innerHTML of HTML element
+ */
+
 // Initial render
 
 const page =
@@ -30,6 +40,7 @@ const outputElement = Dom.byId("outputElement");
 
 inputElement.addEventListener("input", (e: any) => {
 
+    // Get the input expression
     const expr = e.target.value;
 
     if (expr !== "") {

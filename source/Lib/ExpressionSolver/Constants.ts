@@ -1,3 +1,5 @@
+// Typescript types, used for proper typechecking
+
 export type Tree = Node_ | Leaf;
 
 export type Node_ = {
@@ -24,12 +26,8 @@ export type SpecialToken =
 
 export type OperatorToken = {
     readonly type: "operator"
-    readonly value:
-    "+" |
-    "*" |
-    "-" |
-    "/" |
-    "^"
+    readonly value: string
+    readonly literalValue: string
     readonly function: (a: number, b: number) => number
     readonly precedance: 2 | 3 | 4
     readonly associativity: "left" | "right"
@@ -61,6 +59,7 @@ export const OperatorTokens: {
         PLUS: {
             type: "operator",
             value: "+",
+            literalValue: "Add",
             function: (a, b) => a + b,
             precedance: 2,
             associativity: "left",
@@ -69,6 +68,7 @@ export const OperatorTokens: {
         MULTIPLY: {
             type: "operator",
             value: "*",
+            literalValue: "Multiply",
             function: (a, b) => a * b,
             precedance: 3,
             associativity: "left",
@@ -77,6 +77,7 @@ export const OperatorTokens: {
         MINUS: {
             type: "operator",
             value: "-",
+            literalValue: "Subtract",
             function: (a, b) => a - b,
             precedance: 2,
             associativity: "left",
@@ -84,6 +85,7 @@ export const OperatorTokens: {
         DIVIDE: {
             type: "operator",
             value: "/",
+            literalValue: "Divide",
             function: (a, b) => a / b,
             precedance: 3,
             associativity: "left",
@@ -91,6 +93,7 @@ export const OperatorTokens: {
         POWER: {
             type: "operator",
             value: "^",
+            literalValue: "Power",
             function: (a, b) => a ** b,
             precedance: 4,
             associativity: "right",

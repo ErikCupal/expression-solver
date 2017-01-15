@@ -14,6 +14,11 @@ import { pipe } from "./Utils/Pipe";
  * @returns Abstraction syntax tree
  */
 export const createTreeFromExpression: (infixExpression: string) => Tree =
+    /**
+     * For explanation of the pipe function refer to
+     *      Documentation in ./Lib/ExpressionSolver/Pipe
+     *      Or better here :) http://vanslaars.io/post/create-pipe-function/
+     */
     pipe(
         tokenize,
         checkSyntax,

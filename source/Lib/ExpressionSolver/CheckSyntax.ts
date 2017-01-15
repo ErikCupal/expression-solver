@@ -19,14 +19,22 @@ const {
  * 
  * *The implementation does not suppport unary operators and functions yet.*
  */
-export const checkSyntax = (array: Token[]): Token[] => {
+export const checkSyntax = (tokens: Token[]): Token[] => {
 
-    const syntaxCheckReducer = (array: Token[], newToken: Token): Token[] => {
+    /**
+     * Takes stack of Tokens (array) and new token
+     * 
+     * Returns modified stack
+     * 
+     * Read below how reduce function works :)
+     */
+    const syntaxCheckReducer = (stack: Token[], newToken: Token): Token[] => {
 
-        const [lastToken] = array;
+        // Takes the first element from the stack
+        const [lastToken] = stack;
 
         if (lastToken === undefined) {
-            // The array is empty - we're at the beginning of reduce function
+            // The stack is empty - we're at the beginning of the reduce function
 
             switch (newToken.type) {
                 case "operator":
@@ -34,6 +42,7 @@ export const checkSyntax = (array: Token[]): Token[] => {
                     throw OPERATORS_ERROR;
             }
 
+            // Return new stack array with the new token
             return [newToken];
 
         } else {
@@ -83,11 +92,13 @@ export const checkSyntax = (array: Token[]): Token[] => {
                     break;
             }
 
-            return prepend(array, newToken);
+            // Add new token at the beginning of the stack 
+            return prepend(stack, newToken);
         }
     };
 
-    const checked = array
+    const checked = tokens
+        // Explanation of reduce function is in ./Lib/ExpressionSolver/CreateTree (end of the file)
         .reduce(syntaxCheckReducer, [])
         // The reducer returned the new array in reversed order -> reverse it back
         .reverse();
@@ -99,5 +110,6 @@ export const checkSyntax = (array: Token[]): Token[] => {
         throw OPERATORS_ERROR;
     }
 
-    return checked;
+    // Everything is fine, return the original array
+    return tokens;
 };

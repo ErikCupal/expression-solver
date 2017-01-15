@@ -1,6 +1,6 @@
 import { OperatorToken, ParenthesisTokens, SpecialToken, Token } from "./Constants";
 import { Errors } from "./Errors";
-import { append, head, prepend, tail } from "./Utils/Lists";
+import { append, prepend } from "./Utils/Lists";
 
 const {
     LEFT_PAR,
@@ -11,7 +11,7 @@ const {
     PARENTHESES_ERROR,
 } = Errors;
 
-type OutputAndStack = [
+type Stacks = [
     Token[],
     SpecialToken[]
 ];
@@ -25,11 +25,13 @@ type OutputAndStack = [
  */
 export const postfix = (infixTokens: Token[]): Token[] => {
 
-    const processOperator = ([output, specialTokenStack]: OutputAndStack, currOp: OperatorToken): OutputAndStack => {
+    const processOperator = ([outputStack, specialTokenStack]: Stacks, currOp: OperatorToken): Stacks => {
+
+        // Take last operator from the array
         const [lastOp] = specialTokenStack;
 
         if (lastOp === undefined) {
-            return [output, [currOp]];
+            return [outputStack, [currOp]];
         } else {
             const meetsAlgorithmConditions =
                 lastOp.type === "operator" &&
@@ -38,29 +40,31 @@ export const postfix = (infixTokens: Token[]): Token[] => {
 
             switch (true) {
                 case meetsAlgorithmConditions:
-                    return processOperator([append(output, lastOp), tail(specialTokenStack)], currOp);
+                    specialTokenStack.shift();
+                    return processOperator([append(outputStack, lastOp), specialTokenStack], currOp);
                 default:
-                    return [output, prepend(specialTokenStack, currOp)];
+                    return [outputStack, prepend(specialTokenStack, currOp)];
             }
         }
     };
 
-    const processRightParenthesis = ([output, specialTokenStack]: OutputAndStack): OutputAndStack => {
-        const [lastParenthesis] = specialTokenStack;
+    const processRightParenthesis = ([output, specialTokenStack]: Stacks): Stacks => {
+        const lastToken = specialTokenStack.shift();
 
-        if (lastParenthesis === undefined) {
+        if (lastToken === undefined) {
+            // There must be some token on the stack if there is unmatched right parenthesis
             throw PARENTHESES_ERROR;
         } else {
-            switch (lastParenthesis) {
+            switch (lastToken) {
                 case LEFT_PAR:
-                    return [output, tail(specialTokenStack)];
+                    return [output, specialTokenStack];
                 default:
-                    return processRightParenthesis([append(output, lastParenthesis), tail(specialTokenStack)]);
+                    return processRightParenthesis([append(output, lastToken), specialTokenStack]);
             }
         }
     };
 
-    const processRemainingTokensOnStack = ([output, specialTokens]: OutputAndStack): Token[] => {
+    const processSpecialTokensStack = ([output, specialTokens]: Stacks): Token[] => {
         switch (specialTokens.length) {
             case 0:
                 return output;
@@ -69,14 +73,27 @@ export const postfix = (infixTokens: Token[]): Token[] => {
                     .find(token => token.type === "parenthesis");
 
                 if (parenthesisToken) {
+                    // There can't be any parenthesis on the specialTokens stack in this moment
                     throw PARENTHESES_ERROR;
-                } else {
-                    return output.concat(specialTokens);
                 }
+
+                // create new array
+                //      output with appended specialTokens stack at the end of the putput
+                return output.concat(specialTokens);
         }
     };
 
-    const reducer = ([output, specialTokens]: OutputAndStack, a: Token): OutputAndStack => {
+    /**
+     * The algorith is described [here](https://en.wikipedia.org/wiki/Shunting-yard_algorithm).
+     * 
+     * 
+     * Takes stack of Tokens (array) and new token
+     * 
+     * Returns modified stack
+     * 
+     * Read below how reduce function works :)
+     */
+    const reducer = ([output, specialTokens]: Stacks, a: Token): Stacks => {
 
         if (output.length === 0) {
             // The array is empty - we're at the beginning of reduce function
@@ -115,7 +132,8 @@ export const postfix = (infixTokens: Token[]): Token[] => {
         }
     };
 
-    const reduced = infixTokens.reduce<OutputAndStack>(reducer, [[], []]);
+    // Explanation of reduce function is in ./Lib/ExpressionSolver/CreateTree (end of the file)
+    const stacks = infixTokens.reduce<Stacks>(reducer, [[], []]);
 
-    return processRemainingTokensOnStack(reduced);
+    return processSpecialTokensStack(stacks);
 };

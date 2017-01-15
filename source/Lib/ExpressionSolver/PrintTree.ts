@@ -9,27 +9,18 @@ import { Tree } from "./Constants";
 export const printTree = ({ value, left, right }: Tree): string => {
     switch (value.type) {
         case "number":
+            // li simply creates string "<li>" + children + "</li>"
             return li(
                 value.value.toString()
             );
         case "operator":
             const operator = value;
 
-            const literalValue =
-                (() => {
-                    switch (operator.value) {
-                        case "+": return "Add";
-                        case "-": return "Subtract";
-                        case "*": return "Multiply";
-                        case "/": return "Divide";
-                        case "^": return "Power";
-                        default: return operator.value;
-                    }
-                })();
-
             if (left && right) {
+                // li simply creates string "<li>" + children + "</li>"
+                // ul simply creates string "<ul>" + children + "</ul>"
                 return li(
-                    literalValue,
+                    operator.literalValue,
                     ul(
                         printTree(left),
                         printTree(right),
