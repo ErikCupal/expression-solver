@@ -22,7 +22,7 @@ export const createTree = (postfixExpression: Token[]): Tree => {
     const reducer = (stack: (Node_ | Leaf)[], newToken: Token): (Node_ | Leaf)[] => {
         switch (newToken.type) {
             case "number":
-                // In case the new token is a number, push it to the stack
+                // In case the new token is a number, push it onto the stack
                 return append(stack, {
                     value: newToken,
                     left: undefined,
