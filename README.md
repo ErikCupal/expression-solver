@@ -93,5 +93,5 @@ They allow to write more readable, safer and shorter code. ES6 also enables to s
 If want, consider adopting at least some of the new concepts. All modern browsers support ES6 and it can be easily [polyfilled](https://en.wikipedia.org/wiki/Polyfill) for the older one (this project uses polyfill).
 
 You can pick up lots of them just by reading the code.
-One of the harder ones is destructuring (if you don't know).
+One of the harder ones is destructuring (if you don't know it).
 Take a look [here](http://es6-features.org/#ArrayMatching) to learn what it is about :).
