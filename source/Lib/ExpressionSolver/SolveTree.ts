@@ -2,8 +2,6 @@ import { Tree } from "./Constants";
 
 /**
  * Solves an abstraction syntax tree.
- * 
- * *The implementation does not suppport unary operators and functions yet.*
  */
 export const solveTree = ({ value, left, right }: Tree): number => {
     switch (value.type) {
@@ -13,14 +11,17 @@ export const solveTree = ({ value, left, right }: Tree): number => {
             if (left && right) {
                 const operator = value;
 
+                // Ckecks whether the operator has a function
                 // Apply operator's function on left and right leaves
                 // and return the result
-                return operator.function(
-                    solveTree(left),
-                    solveTree(right)
-                );
-            } else if (left || right) {
-                throw "Unary operators not yet implemented!";
+                if (operator.function) {
+                    return operator.function(
+                        solveTree(left),
+                        solveTree(right)
+                    );
+                } else {
+                    throw "Operator doesn't have binary function!";
+                }
             } else {
                 throw "Tree error!";
             }

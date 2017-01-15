@@ -53,8 +53,6 @@ export const shouldParenthesize = (child: Operator, parent: Operator, nodeType: 
 
 /**
  * Takes an abstraction syntax tree and returns infix expression.
- * 
- * *The implementation does not suppport unary operators and functions yet.*
  */
 export const infixTree = (
     // Create vars value, left and right from the first parameter
@@ -66,7 +64,17 @@ export const infixTree = (
 
     switch (value.type) {
         case "number":
-            return value.value.toString();
+            // Are parentheses needed?
+            // Look at this example
+            //      5 / (-8-(-8))
+            //      They are needed when
+            //          the number is less than zero
+            //      AND it's node type is left
+            if (value.value < 0 && nodeType === "right") {
+                return "(" + value.value.toString() + ")";
+            } else {
+                return value.value.toString();
+            }
         case "operator":
 
             const leftNode = infixTree(left as (Node_ | Leaf), value, LEFT);

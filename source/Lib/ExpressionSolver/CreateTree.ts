@@ -7,8 +7,6 @@ import { append } from "./Utils/Lists";
  * 
  * [Princip](http://learnyouahaskell.com/functionally-solving-problems#reverse-polish-notation-calculator)
  * (the algorithm was modified to create an abstraction syntax tree).
- * 
- * *The implementation does not suppport unary operators and functions yet.*
  */
 export const createTree = (postfixExpression: Token[]): Tree => {
 

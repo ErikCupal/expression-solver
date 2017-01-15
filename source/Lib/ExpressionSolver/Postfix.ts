@@ -20,8 +20,6 @@ type Stacks = [
  * Takes tokenized infix expression and returns its postfix form.
  * 
  * Implemented using [Shunting-yard algorithm](https://en.wikipedia.org/wiki/Shunting-yard_algorithm).
- * 
- * *The implementation does not suppport unary operators and functions yet.*
  */
 export const postfix = (infixTokens: Token[]): Token[] => {
 

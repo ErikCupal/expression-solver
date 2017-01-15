@@ -6,6 +6,7 @@ import {
     isOperator,
     isParenthesis,
     NumberToken,
+    ParenthesisTokens,
     Token
 } from "./Constants";
 import { Errors } from "./Errors";
@@ -16,6 +17,10 @@ import { isInteger, isWhitespace } from "./Utils/TypeGuards";
 const {
     UNKNOWN_CHAR_ERROR,
 } = Errors;
+
+const {
+    LEFT_PAR
+} = ParenthesisTokens;
 
 /**
  * Takes an expression and maps every character to Token object.
@@ -50,6 +55,52 @@ const tokenizeSingleChars = (input: string): Token[] => {
         // filter out undefines (the whitespaces)
         .filter(token => token) as Token[];
 };
+
+const resolveUnaryOperators = (array: Token[]): Token[] => {
+
+    const reducer = (outputStack: Token[], newToken: Token): Token[] => {
+        switch (outputStack.length) {
+            case 0:
+                return prepend(outputStack, newToken);
+            case 1:
+                const [last] = outputStack;
+                if (last.type === "operator" && last.unaryFunction) {
+                    if (newToken.type === "number") {
+                        outputStack.shift();
+
+                        return prepend(outputStack, {
+                            type: newToken.type,
+                            value: last.unaryFunction(newToken.value),
+                        });
+                    }
+                }
+
+                return prepend(outputStack, newToken);
+            default:
+                const [firstLast, secondLast] = outputStack;
+                if (secondLast === LEFT_PAR) {
+                    if (firstLast.type === "operator" && firstLast.unaryFunction) {
+                        if (newToken.type === "number") {
+                            outputStack.shift();
+                            outputStack.shift();
+
+                            return prepend(outputStack, {
+                                type: newToken.type,
+                                value: firstLast.unaryFunction(newToken.value),
+                            }, LEFT_PAR);
+                        }
+                    }
+                }
+
+                return prepend(outputStack, newToken);
+        }
+    };
+
+    return array
+        .reduce(reducer, [])
+        .reverse();
+};
+
 
 /**
  * Takes a single character tokenized expression.
@@ -195,8 +246,6 @@ const mergeNumbers = (array: Token[]): Token[] => {
 
 /**
  * Takes an expression. Returns tokenized expression.
- * 
- * *The implementation does not suppport unary operators and functions yet.*
  */
 export const tokenize: (input: string) => Token[] =
     /**
@@ -206,5 +255,6 @@ export const tokenize: (input: string) => Token[] =
      */
     pipe(
         tokenizeSingleChars,
+        resolveUnaryOperators,
         mergeNumbers
     );

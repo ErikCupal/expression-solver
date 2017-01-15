@@ -186,8 +186,6 @@
 	    UNKNOWN_CHAR_ERROR = _Errors.Errors.UNKNOWN_CHAR_ERROR;
 	/**
 	 * Takes tokenized expression returns it back. Throws exception in case of syntax error.
-	 *
-	 * *The implementation does not suppport unary operators and functions yet.*
 	 */
 
 	var checkSyntax = exports.checkSyntax = function checkSyntax(tokens) {
@@ -293,6 +291,9 @@
 	        function: function _function(a, b) {
 	            return a + b;
 	        },
+	        unaryFunction: function unaryFunction(a) {
+	            return a;
+	        },
 	        precedance: 2,
 	        associativity: "left",
 	        associative: true
@@ -314,6 +315,9 @@
 	        literalValue: "Subtract",
 	        function: function _function(a, b) {
 	            return a - b;
+	        },
+	        unaryFunction: function unaryFunction(a) {
+	            return -a;
 	        },
 	        precedance: 2,
 	        associativity: "left"
@@ -542,8 +546,6 @@
 	 *
 	 * [Princip](http://learnyouahaskell.com/functionally-solving-problems#reverse-polish-notation-calculator)
 	 * (the algorithm was modified to create an abstraction syntax tree).
-	 *
-	 * *The implementation does not suppport unary operators and functions yet.*
 	 */
 	var createTree = exports.createTree = function createTree(postfixExpression) {
 	    /**
@@ -639,8 +641,6 @@
 	 * Takes tokenized infix expression and returns its postfix form.
 	 *
 	 * Implemented using [Shunting-yard algorithm](https://en.wikipedia.org/wiki/Shunting-yard_algorithm).
-	 *
-	 * *The implementation does not suppport unary operators and functions yet.*
 	 */
 
 	var postfix = exports.postfix = function postfix(infixTokens) {
@@ -784,6 +784,7 @@
 	var _TypeGuards = __webpack_require__(12);
 
 	var UNKNOWN_CHAR_ERROR = _Errors.Errors.UNKNOWN_CHAR_ERROR;
+	var LEFT_PAR = _Constants.ParenthesisTokens.LEFT_PAR;
 	/**
 	 * Takes an expression and maps every character to Token object.
 	 *
@@ -816,6 +817,47 @@
 	        return token;
 	    });
 	};
+	var resolveUnaryOperators = function resolveUnaryOperators(array) {
+	    var reducer = function reducer(outputStack, newToken) {
+	        switch (outputStack.length) {
+	            case 0:
+	                return (0, _Lists.prepend)(outputStack, newToken);
+	            case 1:
+	                var _outputStack = _slicedToArray(outputStack, 1),
+	                    last = _outputStack[0];
+
+	                if (last.type === "operator" && last.unaryFunction) {
+	                    if (newToken.type === "number") {
+	                        outputStack.shift();
+	                        return (0, _Lists.prepend)(outputStack, {
+	                            type: newToken.type,
+	                            value: last.unaryFunction(newToken.value)
+	                        });
+	                    }
+	                }
+	                return (0, _Lists.prepend)(outputStack, newToken);
+	            default:
+	                var _outputStack2 = _slicedToArray(outputStack, 2),
+	                    firstLast = _outputStack2[0],
+	                    secondLast = _outputStack2[1];
+
+	                if (secondLast === LEFT_PAR) {
+	                    if (firstLast.type === "operator" && firstLast.unaryFunction) {
+	                        if (newToken.type === "number") {
+	                            outputStack.shift();
+	                            outputStack.shift();
+	                            return (0, _Lists.prepend)(outputStack, {
+	                                type: newToken.type,
+	                                value: firstLast.unaryFunction(newToken.value)
+	                            }, LEFT_PAR);
+	                        }
+	                    }
+	                }
+	                return (0, _Lists.prepend)(outputStack, newToken);
+	        }
+	    };
+	    return array.reduce(reducer, []).reverse();
+	};
 	/**
 	 * Takes a single character tokenized expression.
 	 * Returns tokenized expression with merged single digits NumberTokens into complete number NumberTokes.
@@ -830,8 +872,8 @@
 	     */
 	    var mergeReducer = function mergeReducer(outputStack, newToken) {
 	        // Take first token from the stack
-	        var _outputStack = _slicedToArray(outputStack, 1),
-	            lastToken = _outputStack[0];
+	        var _outputStack3 = _slicedToArray(outputStack, 1),
+	            lastToken = _outputStack3[0];
 
 	        if (lastToken === undefined) {
 	            // We're at the beginning of the array
@@ -944,8 +986,6 @@
 	};
 	/**
 	 * Takes an expression. Returns tokenized expression.
-	 *
-	 * *The implementation does not suppport unary operators and functions yet.*
 	 */
 	var tokenize =
 	/**
@@ -953,7 +993,7 @@
 	 *      Documentation in ./Lib/ExpressionSolver/Pipe
 	 *      Or better here :) http://vanslaars.io/post/create-pipe-function/
 	 */
-	exports.tokenize = (0, _Pipe.pipe)(tokenizeSingleChars, mergeNumbers);
+	exports.tokenize = (0, _Pipe.pipe)(tokenizeSingleChars, resolveUnaryOperators, mergeNumbers);
 
 /***/ },
 /* 11 */
@@ -1117,8 +1157,6 @@
 	};
 	/**
 	 * Takes an abstraction syntax tree and returns infix expression.
-	 *
-	 * *The implementation does not suppport unary operators and functions yet.*
 	 */
 	var infixTree = exports.infixTree = function infixTree(
 	// Create vars value, left and right from the first parameter
@@ -1130,7 +1168,17 @@
 
 	    switch (value.type) {
 	        case "number":
-	            return value.value.toString();
+	            // Are parentheses needed?
+	            // Look at this example
+	            //      5 / (-8-(-8))
+	            //      They are needed when
+	            //          the number is less than zero
+	            //      AND it's node type is left
+	            if (value.value < 0 && nodeType === "right") {
+	                return "(" + value.value.toString() + ")";
+	            } else {
+	                return value.value.toString();
+	            }
 	        case "operator":
 	            var leftNode = infixTree(left, value, LEFT);
 	            var tokenValue = value.value.toString();
@@ -1165,7 +1213,7 @@
 	/**
 	 * Creates HTML unordered list tree from the abstraction syntax tree.
 	 *
-	 * *The implementation does not suppport unary operators and functions yet.*
+	 * *The implementation does not suppport  operators and functions yet.*
 	 */
 	var printTree = exports.printTree = function printTree(_ref) {
 	    var value = _ref.value,
@@ -1182,8 +1230,6 @@
 	                // li simply creates string "<li>" + children + "</li>"
 	                // ul simply creates string "<ul>" + children + "</ul>"
 	                return (0, _Html.li)(operator.literalValue, (0, _Html.ul)(printTree(left), printTree(right)));
-	            } else if (left || right) {
-	                throw "Unary operators not yet implemented!";
 	            } else {
 	                throw "Tree error!";
 	            }
@@ -1275,8 +1321,6 @@
 	});
 	/**
 	 * Solves an abstraction syntax tree.
-	 *
-	 * *The implementation does not suppport unary operators and functions yet.*
 	 */
 	var solveTree = exports.solveTree = function solveTree(_ref) {
 	    var value = _ref.value,
@@ -1289,11 +1333,14 @@
 	        case "operator":
 	            if (left && right) {
 	                var operator = value;
+	                // Ckecks whether the operator has a function
 	                // Apply operator's function on left and right leaves
 	                // and return the result
-	                return operator.function(solveTree(left), solveTree(right));
-	            } else if (left || right) {
-	                throw "Unary operators not yet implemented!";
+	                if (operator.function) {
+	                    return operator.function(solveTree(left), solveTree(right));
+	                } else {
+	                    throw "Operator doesn't have binary function!";
+	                }
 	            } else {
 	                throw "Tree error!";
 	            }
