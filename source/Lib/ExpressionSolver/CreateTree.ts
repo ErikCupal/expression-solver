@@ -30,8 +30,8 @@ export const createTree = (postfixExpression: Token[]): Tree => {
                 });
             case "operator":
                 // In case the new token is operator
-                // 1) pop two nodes of the stack
-                // 2) create new node with the newToken as token and the two popped nodes as leaves
+                // 1) pop two nodes or leaves of the stack
+                // 2) create new node with the newToken as token and the two popped nodes (leaves) its leaves
                 // 3) push the new node on the stack
 
                 const x = stack.pop();
