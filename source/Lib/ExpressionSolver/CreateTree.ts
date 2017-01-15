@@ -1,5 +1,6 @@
 import { Node_ } from "./Constants";
-import { Token, Tree, Leaf } from "./Constants";
+import { Leaf, Token, Tree } from "./Constants";
+import { append } from "./Utils/Lists";
 
 /**
  * Takes a postfix expression and returns an abstraction syntax tree.
@@ -10,36 +11,71 @@ import { Token, Tree, Leaf } from "./Constants";
  * *The implementation does not suppport unary operators and functions yet.*
  */
 export const createTree = (postfixExpression: Token[]): Tree => {
-    const reducer = (stack: (Node_ | Leaf)[], newToken: Token): (Node_ | Leaf)[] => {
-        const [x, y, ...rest] = stack;
 
+    /**
+     * Takes stack of Nodes or Leaves (array) and new token
+     * 
+     * Returns modified stack
+     * 
+     * Read below how reduce function works :)
+     */
+    const reducer = (stack: (Node_ | Leaf)[], newToken: Token): (Node_ | Leaf)[] => {
         switch (newToken.type) {
             case "number":
                 // In case the new token is a number, push it to the stack
-                return [{
+                return append(stack, {
                     value: newToken,
                     left: undefined,
                     right: undefined,
-                }, ...stack];
+                });
             case "operator":
                 // In case the new token is operator
                 // 1) pop two nodes of the stack
                 // 2) create new node with the newToken as token and the two popped nodes as leaves
                 // 3) push the new node on the stack
-                return [{
-                    value: newToken,
-                    left: y,
-                    right: x
-                }, ...rest];
+
+                const x = stack.pop();
+                const y = stack.pop();
+
+                // Checks whether x and y exist
+                if (x && y) {
+                    return append(stack, {
+                        value: newToken,
+                        left: y,
+                        right: x
+                    });
+                } else {
+                    // Impossible, can't happen
+                    throw "Error ocurred while creating the tree";
+                }
             default:
                 throw "Invalid token!";
         }
     };
 
+
+    /**
+     * Reduce function (method of Array object) does this:
+     * 
+     * It takes a function as first parameter
+     * 
+     * It iterates over the array and calls the function on each iteration
+     *      It provides the function two parameters
+     *          1) accumulated value <- read below
+     *          2) new value from the array
+     *      The function returns something - the something will be passed as the accumulated value during next iteration
+     * After the iteration finished, it returns the accumulated value
+     * 
+     * On the very first iteration there is no accumulated value - we must provide initial value to the reduce function
+     *      In this case: empty array [] -----------
+     *                                              |
+     *                                              |
+     */
     const stack = postfixExpression.reduce(reducer, []);
 
     switch (stack.length) {
         case 1:
+            // There must be only one value on the stack - the completed tree
             return stack[0];
         default:
             throw "Error ocurred while creating the tree";
