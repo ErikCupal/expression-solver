@@ -21,7 +21,7 @@ This repo was created for learning purposes.
 ## I want to experiment..
 
 1. [Download](https://nodejs.org/en/) and install latest Node
-0. Clone the repo (terminal -> `git clone https://github.com/ErikCupal/expression-solver.git`)
+0. Clone the repo (terminal -> ` git clone https://github.com/ErikCupal/expression-solver.git`)
 0. Open terminal in the root folder
 0. Run `npm i` in the terminal
 0. Run `npm run dev` in the terminal
@@ -40,10 +40,10 @@ We start with a expression, for example
 
 ### Tokenize it
 
-1. We transform each character into object with type (number, operator, number divider or parenthesis) and value.
+1. We transform each character into object with type (number, operator, number divider or parenthesis), value and possibly other properties (like precedance for operators).
 The token objects are stored in array.
 0. We throw away whitespaces.
-0. We check for unary operators and resolve them right away - e.g. `-5 * (-8)`
+0. We check for any unary operators and resolve them right away - e.g. `-5 * (-8)`
 0. We merge consequent single numbers and number dividers (like `.` or `,`) into complete numbers.
 
 We got tokenized array.
@@ -54,7 +54,7 @@ Error is thrown if there is any syntax error.
 
 ### Transform the expression into postfix notation
 
-The expression is transform into [postfix](https://en.wikipedia.org/wiki/Reverse_Polish_notation) form (also called reverse polish notation).
+The expression is transformed into [postfix](https://en.wikipedia.org/wiki/Reverse_Polish_notation) form (also called reverse polish notation).
 We use [Shunting-yard algorithm](https://en.wikipedia.org/wiki/Shunting-yard_algorithm) to achieve it.
 The expression will look like this
 > `5 9 3 * + 2 6 ^ +`
@@ -69,9 +69,18 @@ We create a tree. [Princip](http://learnyouahaskell.com/functionally-solving-pro
 ### Great, what now?
 
 We got the tree and we can
-* Solve the expression
-* Print the expression in canonical form
-* Print the tree
+* Solve the expression -> `96`
+* Print the expression in canonical form -> `5 + 9 * 3 + 2 ^ 6`
+* Print the tree:
+  * Add
+    * Add
+      * 5
+      * Multiply
+        * 9
+        * 3
+    * Power
+      * 2
+      * 6
 
 ## Wait! What is this `ts` thing, what is `=>`, `const`, `...` and how come the code is split into several files??? I can't understand a thing!
 
