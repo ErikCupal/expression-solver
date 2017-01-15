@@ -8,7 +8,7 @@ import { pipe } from "./Utils/Pipe";
 /**
  * Resolves the infix notation expression into abstraction syntax tree.
  * 
- * The expression can contain +, -, *, /, ^ operators and parentheses
+ * The expression can contain operators and parentheses
  * 
  * @param infixExpression An expression in infix notation
  * @returns Abstraction syntax tree

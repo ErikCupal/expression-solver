@@ -6,7 +6,7 @@ ____________________________
 ## About
 
 This is a demo implementation of [infix](https://en.wikipedia.org/wiki/Infix_notation) expression solver.
-It supports operators +, -, *, /, ^ and parentheses.
+It supports operators +, -, *, /, ^, % and parentheses.
 Other operators can be easily added.
 Unfortunately, it doesn't support [unary](https://en.wikipedia.org/wiki/Unary_operation) operators yet :/.
 It is written using functional Javascript.

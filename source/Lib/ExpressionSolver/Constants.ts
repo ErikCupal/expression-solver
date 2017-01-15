@@ -90,6 +90,14 @@ export const OperatorTokens: {
             precedance: 3,
             associativity: "left",
         },
+        REMAINDER: {
+            type: "operator",
+            value: "%",
+            literalValue: "Remainder",
+            function: (a, b) => a % b,
+            precedance: 3,
+            associativity: "left",
+        },
         POWER: {
             type: "operator",
             value: "^",
@@ -97,7 +105,7 @@ export const OperatorTokens: {
             function: (a, b) => a ** b,
             precedance: 4,
             associativity: "right",
-        }
+        },
     };
 
 /**
