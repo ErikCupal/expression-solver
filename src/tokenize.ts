@@ -6,21 +6,21 @@ import {
     isOperator,
     isParenthesis,
     NumberToken,
-    ParenthesisTokens,
+    PARENTHESIS_TOKENS,
     Token,
-} from "./Constants"
-import { Errors } from "./Errors"
-import { prepend } from "./Utils/Lists"
-import { pipe } from "./Utils/Pipe"
-import { isInteger, isWhitespace } from "./Utils/TypeGuards"
+} from './constants'
+import { ERRORS } from './errors'
+import { pipe } from 'ramda'
+import { isInteger, isWhitespace } from './typeGuards'
+import { prepend } from './utils/lists'
 
 const {
     UNKNOWN_CHAR_ERROR,
-} = Errors
+} = ERRORS
 
 const {
     LEFT_PAR,
-} = ParenthesisTokens
+} = PARENTHESIS_TOKENS
 
 /**
  * Takes an expression and maps every character to Token object.
@@ -37,7 +37,7 @@ const tokenizeSingleChars = (input: string): Token[] => {
             switch (true) {
                 case isInteger(char):
                     return {
-                        type: "number",
+                        type: 'number',
                         value: Number(char),
                     }
                 case isOperator(char):
@@ -64,8 +64,8 @@ const resolveUnaryOperators = (array: Token[]): Token[] => {
                 return prepend(outputStack, newToken)
             case 1:
                 const [last] = outputStack
-                if (last.type === "operator" && last.unaryFunction) {
-                    if (newToken.type === "number") {
+                if (last.type === 'operator' && last.unaryFunction) {
+                    if (newToken.type === 'number') {
                         outputStack.shift()
 
                         return prepend(outputStack, {
@@ -79,8 +79,8 @@ const resolveUnaryOperators = (array: Token[]): Token[] => {
             default:
                 const [firstLast, secondLast] = outputStack
                 if (secondLast === LEFT_PAR) {
-                    if (firstLast.type === "operator" && firstLast.unaryFunction) {
-                        if (newToken.type === "number") {
+                    if (firstLast.type === 'operator' && firstLast.unaryFunction) {
+                        if (newToken.type === 'number') {
                             outputStack.shift()
                             outputStack.shift()
 
@@ -100,7 +100,6 @@ const resolveUnaryOperators = (array: Token[]): Token[] => {
         .reduce(reducer, [])
         .reverse()
 }
-
 
 /**
  * Takes a single character tokenized expression.
@@ -124,19 +123,19 @@ const mergeNumbers = (array: Token[]): Token[] => {
             // We're at the beginning of the array
 
             switch (newToken.type) {
-                case "number":
+                case 'number':
                     /**
                      * Hmm number, just create array with this it
                      */
                     return [newToken]
-                case "numberDivider":
+                case 'numberDivider':
                     /**
                      * It's possible it can be like .3 -> 0.3
                      * We create a number from it and we mark it's
                      * a decimal by setting decimalPlace to 0
                      */
                     return [{
-                        type: "number",
+                        type: 'number',
                         value: 0,
                         decimalPlace: 0,
                     }]
@@ -146,14 +145,14 @@ const mergeNumbers = (array: Token[]): Token[] => {
         } else {
 
             switch (lastToken.type) {
-                case "number":
+                case 'number':
 
                     // We throw away the first element from the array
                     // because we need to replace it with another token
                     outputStack.shift()
 
                     switch (newToken.type) {
-                        case "number":
+                        case 'number':
                             /**
                              * Two numbers
                              * Let's multiply the previous number by 10 and add them together
@@ -162,11 +161,11 @@ const mergeNumbers = (array: Token[]): Token[] => {
                             return prepend(outputStack, {
                                 type: lastToken.type,
                                 value: lastToken.value * 10 + newToken.value,
-                                decimalPlace: (typeof lastToken.decimalPlace === "number")
+                                decimalPlace: (typeof lastToken.decimalPlace === 'number')
                                     ? lastToken.decimalPlace + 1
                                     : undefined,
                             })
-                        case "numberDivider":
+                        case 'numberDivider':
                             /**
                              * e.g 4562.
                              * We set decimalPlace to 0 to mark it's a decimal
@@ -185,7 +184,7 @@ const mergeNumbers = (array: Token[]): Token[] => {
                                      */
                                     return prepend(outputStack, newToken, {
                                         type: lastToken.type,
-                                        value: lastToken.value * 10 ** (-lastToken.decimalPlace),
+                                        value: lastToken.value * 10 ** (-(lastToken.decimalPlace as number)),
                                     })
                                 default:
                                     return prepend(outputStack, newToken, lastToken)
@@ -193,14 +192,14 @@ const mergeNumbers = (array: Token[]): Token[] => {
                     }
                 default:
                     switch (newToken.type) {
-                        case "number":
+                        case 'number':
                             // We're creating new NumberToken object in order to get rid of the helper
                             // decimalPlace: undefined property
                             return prepend(outputStack, {
                                 type: newToken.type,
                                 value: newToken.value,
                             })
-                        case "numberDivider":
+                        case 'numberDivider':
                             /**
                              * e.g. last = *, new = .
                              * It's possible it can be like .3 -> 0.3
@@ -208,7 +207,7 @@ const mergeNumbers = (array: Token[]): Token[] => {
                              * a decimal by setting decimalPlace to 0
                              */
                             return prepend(outputStack, {
-                                type: "number",
+                                type: 'number',
                                 value: 0,
                                 decimalPlace: 0,
                             } as NumberToken)
@@ -216,33 +215,27 @@ const mergeNumbers = (array: Token[]): Token[] => {
                             return prepend(outputStack, newToken)
                     }
             }
-        };
+        }
     }
 
     const outputStack = array
         // Explanation of reduce function is in ./Lib/ExpressionSolver/CreateTree (end of the file)
         .reduce(mergeReducer, [])
 
-
-    let lastToken = outputStack[0]
-    if (lastToken) {
-        if (lastToken.type === "number" && lastToken.decimalPlace !== undefined) {
-            /**
-             * In case the number is decimal
-             *      shift the number by decimalPlace number
-             */
-            lastToken = {
-                type: lastToken.type,
-                value: lastToken.value * 10 ** (-lastToken.decimalPlace),
-            }
+    const lastToken = outputStack[0]
+    if (lastToken && lastToken.type === 'number' && lastToken.decimalPlace !== undefined) {
+        /**
+         * In case the number is decimal
+         *      shift the number by decimalPlace number
+         */
+        outputStack[0] = {
+            type: lastToken.type,
+            value: lastToken.value * 10 ** (-lastToken.decimalPlace),
         }
     }
 
     return outputStack.reverse()
 }
-
-
-
 
 /**
  * Takes an expression. Returns tokenized expression.

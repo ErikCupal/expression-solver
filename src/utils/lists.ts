@@ -9,24 +9,6 @@ export const last = <T>(array: T[]): T | undefined =>
         : undefined
 
 /**
- * Returns the first element of the array
- * 
- * @param array The source array.
- */
-export const head = <T>(array: T[]): T | undefined => array[0]
-
-/**
- * Takes array, removes first element and returns the array
- * 
- * **The function mutates original array.**
- * 
- */
-export const tail = <T>(array: T[]): T[] => {
-    array.shift()
-    return array
-}
-
-/**
  * Takes array, appends element(s) at the end and returns the array
  * 
  * **The function mutates original array.**

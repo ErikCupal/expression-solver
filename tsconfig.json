@@ -1,18 +1,18 @@
 {
-    "compileOnSave": true,
-    "compilerOptions": {
-        "rootDir": "./source",
-        "outDir": "./build",
-        "target": "es2017",
-        "lib": [
-            "es2017",
-            "dom"
-        ],
-        "module": "commonjs",
-        "sourceMap": true,
-        "alwaysStrict": true,
-        "strictNullChecks": true,
-        "noImplicitReturns": true,
-        "pretty": true
-    }
+  "compilerOptions": {
+    "rootDir": "./src",
+    "target": "esnext",
+    "module": "es2015",
+    "moduleResolution": "node",
+    "lib": [
+      "es2017",
+      "dom"
+    ],
+    "alwaysStrict": true,
+    "strictNullChecks": true,
+    "noImplicitReturns": true,
+    "pretty": true,
+    "noImplicitAny": true,
+    "allowSyntheticDefaultImports": true
+  }
 }

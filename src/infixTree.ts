@@ -1,16 +1,16 @@
-import { Leaf, Node_, OperatorToken, Tree } from "./Constants"
-import { Errors } from "./Errors"
+import { Leaf, Node, OperatorToken, Tree } from './constants'
+import { ERRORS } from './errors'
 
 const {
     OPER_OR_NODE_ERROR,
     TOKEN_ERROR,
-} = Errors
+} = ERRORS
 
-type NodeType = "left" | "right"
+type NodeType = 'left' | 'right'
 type Operator = OperatorToken
 
-const LEFT = "left"
-const RIGHT = "right"
+const LEFT = 'left'
+const RIGHT = 'right'
 
 /**
  * Tells whether parentheses are needed
@@ -59,27 +59,27 @@ export const infixTree = (
     // This notation is ES6 Destructuring
     { value, left, right }: Tree,
     parentOp?: Operator,
-    nodeType?: NodeType
+    nodeType?: NodeType,
 ): string => {
 
     switch (value.type) {
-        case "number":
+        case 'number':
             // Are parentheses needed?
             // Look at this example
             //      5 / (-8-(-8))
             //      They are needed when
             //          the number is less than zero
             //      AND it's node type is left
-            if (value.value < 0 && nodeType === "right") {
-                return "(" + value.value.toString() + ")"
+            if (value.value < 0 && nodeType === 'right') {
+                return '(' + value.value.toString() + ')'
             } else {
                 return value.value.toString()
             }
-        case "operator":
+        case 'operator':
 
-            const leftNode = infixTree(left as (Node_ | Leaf), value, LEFT)
+            const leftNode = infixTree(left as (Node | Leaf), value, LEFT)
             const tokenValue = value.value.toString()
-            const rightNode = infixTree(right as (Node_ | Leaf), value, RIGHT)
+            const rightNode = infixTree(right as (Node | Leaf), value, RIGHT)
 
             if (parentOp && nodeType) {
                 const parenthesize = shouldParenthesize(value, parentOp, nodeType)

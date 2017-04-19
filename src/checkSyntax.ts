@@ -1,18 +1,18 @@
-import { ParenthesisTokens, Token } from "./Constants"
-import { Errors } from "./Errors"
-import { last, prepend } from "./Utils/Lists"
+import { PARENTHESIS_TOKENS, Token } from './constants'
+import { ERRORS } from './errors'
+import { last, prepend } from './utils/lists'
 
 const {
     RIGHT_PAR,
-    LEFT_PAR
-} = ParenthesisTokens
+    LEFT_PAR,
+} = PARENTHESIS_TOKENS
 
 const {
     PARENTHESES_ERROR,
     PAREN_OR_OPER_ERROR,
     OPERATORS_ERROR,
     UNKNOWN_CHAR_ERROR,
-} = Errors
+} = ERRORS
 
 /**
  * Takes tokenized expression returns it back. Throws exception in case of syntax error.
@@ -35,7 +35,7 @@ export const checkSyntax = (tokens: Token[]): Token[] => {
             // The stack is empty - we're at the beginning of the reduce function
 
             switch (newToken.type) {
-                case "operator":
+                case 'operator':
                     // Operator can't be at the beginning of the expression
                     throw OPERATORS_ERROR
             }
@@ -45,12 +45,12 @@ export const checkSyntax = (tokens: Token[]): Token[] => {
 
         } else {
             switch (lastToken.type) {
-                case "operator":
+                case 'operator':
                     switch (newToken.type) {
-                        case "operator":
+                        case 'operator':
                             // Can't have two consequent operators in expression
                             throw OPERATORS_ERROR
-                        case "parenthesis":
+                        case 'parenthesis':
                             switch (newToken) {
                                 case RIGHT_PAR:
                                     // e.g. *) - nonsense
@@ -59,14 +59,14 @@ export const checkSyntax = (tokens: Token[]): Token[] => {
                             break
                     }
                     break
-                case "parenthesis":
+                case 'parenthesis':
                     switch (lastToken) {
                         case LEFT_PAR:
                             switch (newToken.type) {
-                                case "operator":
+                                case 'operator':
                                     // e.g. (* - nonsense
                                     throw PAREN_OR_OPER_ERROR
-                                case "parenthesis":
+                                case 'parenthesis':
                                     switch (newToken) {
                                         case RIGHT_PAR:
                                             // () - dissallowed, though this rule might be possibly omitted
@@ -77,7 +77,7 @@ export const checkSyntax = (tokens: Token[]): Token[] => {
                             break
                         case RIGHT_PAR:
                             switch (newToken.type) {
-                                case "parenthesis":
+                                case 'parenthesis':
                                     switch (newToken) {
                                         case LEFT_PAR:
                                             // )( - dissallowed
@@ -103,7 +103,7 @@ export const checkSyntax = (tokens: Token[]): Token[] => {
 
     const lastTokenInArray = last(checked)
 
-    if (lastTokenInArray && lastTokenInArray.type === "operator") {
+    if (lastTokenInArray && lastTokenInArray.type === 'operator') {
         // Operator can't be at the end of the expression
         throw OPERATORS_ERROR
     }

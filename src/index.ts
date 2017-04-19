@@ -1,10 +1,10 @@
-import * as Dom from "./Lib/Dom"
-import { createTreeFromExpression } from "./Lib/ExpressionSolver/CreateTreeFromExpression"
-import { infixTree } from "./Lib/ExpressionSolver/InfixTree"
-import { printTree } from "./Lib/ExpressionSolver/PrintTree"
-import { solveTree } from "./Lib/ExpressionSolver/SolveTree"
-import { div, h1, input, p, render, span, ul } from "./Lib/Html"
-import { id, type, value } from "./Lib/HtmlAttributes"
+import * as Dom from './html/dom'
+import { createTreeFromExpression } from './createTreeFromExpression'
+import { infixTree } from './infixTree'
+import { printTree } from './printTree'
+import { solveTree } from './solveTree'
+import { div, h1, input, p, render, span, ul } from './html'
+import { id, type, value } from './html/attributes'
 
 /**
  * li, ul, p, div... functions create HTML in string format
@@ -20,30 +20,31 @@ import { id, type, value } from "./Lib/HtmlAttributes"
 
 const page =
     div(
-        h1("Expression solver"),
+        h1('Expression solver'),
         input([
-            id("exprInput"),
-            type("text"),
-            value(""),
+            id('exprInput'),
+            type('text'),
+            value(''),
         ]),
         div([
-            id("outputElement"),
+            id('outputElement'),
         ]),
     )
 
-render(page, Dom.byId("root"))
+render(page, Dom.getById('root'))
 
 // Add event to input
 
-const inputElement = Dom.byId("exprInput")
-const outputElement = Dom.byId("outputElement")
+const inputElement = Dom.getById('exprInput')
+const outputElement = Dom.getById('outputElement')
 
-inputElement.addEventListener("input", (e: any) => {
+// tslint:disable-next-line:no-any
+inputElement.addEventListener('input', (e: any) => {
 
     // Get the input expression
     const expr = e.target.value
 
-    if (expr !== "") {
+    if (expr !== '') {
         try {
             const tree = createTreeFromExpression(expr)
 
@@ -72,6 +73,6 @@ inputElement.addEventListener("input", (e: any) => {
             render(errorHtml, outputElement)
         }
     } else {
-        render("", outputElement)
+        render('', outputElement)
     }
 })

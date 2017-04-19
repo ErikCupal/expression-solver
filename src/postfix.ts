@@ -1,15 +1,16 @@
-import { OperatorToken, ParenthesisTokens, SpecialToken, Token } from "./Constants"
-import { Errors } from "./Errors"
-import { append, prepend } from "./Utils/Lists"
+import { OperatorToken, PARENTHESIS_TOKENS, SpecialToken, Token } from './constants'
+import { ERRORS } from './errors'
+import { append, prepend } from './utils/lists'
+import { where } from 'ramda'
 
 const {
     LEFT_PAR,
     RIGHT_PAR,
-} = ParenthesisTokens
+} = PARENTHESIS_TOKENS
 
 const {
     PARENTHESES_ERROR,
-} = Errors
+} = ERRORS
 
 type Stacks = [
     Token[],
@@ -32,9 +33,9 @@ export const postfix = (infixTokens: Token[]): Token[] => {
             return [outputStack, [currOp]]
         } else {
             const meetsAlgorithmConditions =
-                lastOp.type === "operator" &&
-                ((currOp.associativity === "left" && currOp.precedance <= lastOp.precedance) ||
-                    (currOp.associativity === "right" && currOp.precedance < lastOp.precedance))
+                lastOp.type === 'operator' &&
+                ((currOp.associativity === 'left' && currOp.precedance <= lastOp.precedance) ||
+                    (currOp.associativity === 'right' && currOp.precedance < lastOp.precedance))
 
             switch (true) {
                 case meetsAlgorithmConditions:
@@ -68,7 +69,7 @@ export const postfix = (infixTokens: Token[]): Token[] => {
                 return output
             default:
                 const parenthesisToken = specialTokens
-                    .find(token => token.type === "parenthesis")
+                    .find(token => token.type === 'parenthesis')
 
                 if (parenthesisToken) {
                     // There can't be any parenthesis on the specialTokens stack in this moment
@@ -97,11 +98,11 @@ export const postfix = (infixTokens: Token[]): Token[] => {
             // The array is empty - we're at the beginning of reduce function
 
             switch (a.type) {
-                case "number":
+                case 'number':
                     return [[a], specialTokens]
-                case "operator":
+                case 'operator':
                     return [[], prepend(specialTokens, a)]
-                case "parenthesis":
+                case 'parenthesis':
                     switch (a) {
                         case LEFT_PAR:
                             return [[], prepend(specialTokens, a)]
@@ -109,15 +110,15 @@ export const postfix = (infixTokens: Token[]): Token[] => {
                             throw PARENTHESES_ERROR
                     }
                 default:
-                    throw `Unknown token ${a}`
+                    throw new Error(`Unknown token ${a}`)
             }
         } else {
             switch (a.type) {
-                case "number":
+                case 'number':
                     return [append(output, a), specialTokens]
-                case "operator":
+                case 'operator':
                     return processOperator([output, specialTokens], a)
-                case "parenthesis":
+                case 'parenthesis':
                     switch (a) {
                         case LEFT_PAR:
                             return [output, prepend(specialTokens, a)]
@@ -125,7 +126,7 @@ export const postfix = (infixTokens: Token[]): Token[] => {
                             return processRightParenthesis([output, specialTokens])
                     }
                 default:
-                    throw `Unknown token ${a}`
+                    throw new Error(`Unknown token ${a}`)
             }
         }
     }

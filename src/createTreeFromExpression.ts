@@ -1,9 +1,9 @@
-import { checkSyntax } from "./CheckSyntax"
-import { Tree } from "./Constants"
-import { createTree } from "./CreateTree"
-import { postfix } from "./Postfix"
-import { tokenize } from "./Tokenize"
-import { pipe } from "./Utils/Pipe"
+import { checkSyntax } from './checkSyntax'
+import { Tree } from './constants'
+import { createTree } from './createTree'
+import { postfix } from './postfix'
+import { tokenize } from './tokenize'
+import { pipe } from 'ramda'
 
 /**
  * Resolves the infix notation expression into abstraction syntax tree.
@@ -23,5 +23,5 @@ export const createTreeFromExpression: (infixExpression: string) => Tree =
         tokenize,
         checkSyntax,
         postfix,
-        createTree
+        createTree,
     )

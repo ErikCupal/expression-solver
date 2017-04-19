@@ -1,17 +1,17 @@
-import { li, ul } from "../Html"
-import { Tree } from "./Constants"
+import { li, ul } from './html'
+import { Tree } from './constants'
 
 /**
  * Creates HTML unordered list tree from the abstraction syntax tree.
  */
 export const printTree = ({ value, left, right }: Tree): string => {
     switch (value.type) {
-        case "number":
+        case 'number':
             // li simply creates string "<li>" + children + "</li>"
             return li(
                 value.value.toString(),
             )
-        case "operator":
+        case 'operator':
             const operator = value
 
             if (left && right) {
@@ -25,9 +25,9 @@ export const printTree = ({ value, left, right }: Tree): string => {
                     ),
                 )
             } else {
-                throw "Tree error!"
+                throw Error('Tree error!')
             }
         default:
-            throw "Unknown token!"
+            throw Error('Unknown token!')
     }
 }

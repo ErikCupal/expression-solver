@@ -1,13 +1,13 @@
-import { Tree } from "./Constants"
+import { Tree } from './constants'
 
 /**
  * Solves an abstraction syntax tree.
  */
 export const solveTree = ({ value, left, right }: Tree): number => {
     switch (value.type) {
-        case "number":
+        case 'number':
             return value.value
-        case "operator":
+        case 'operator':
             if (left && right) {
                 const operator = value
 
@@ -20,12 +20,12 @@ export const solveTree = ({ value, left, right }: Tree): number => {
                         solveTree(right),
                     )
                 } else {
-                    throw "Operator doesn't have binary function!"
+                    throw Error("Operator doesn't have binary function!")
                 }
             } else {
-                throw "Tree error!"
+                throw Error('Tree error!')
             }
         default:
-            throw "Unknown token!"
+            throw Error('Unknown token!')
     }
 }
