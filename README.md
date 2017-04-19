@@ -31,11 +31,10 @@ We start with an expression, for example
 
 ### Tokenize it
 
-1.We transform each character into object with type (number, operator, number divider or parenthesis), value and possibly other properties (like precedance for operators).
-The token objects are stored in array.
-1.We throw away whitespaces.
-1.We check for any unary operators and resolve them right away - e.g. `-5 * (-8)`
-1.We merge consequent single numbers and number dividers (like `.` or `,`) into complete numbers.
+1. We transform each character into object with type (number, operator, number divider or parenthesis), value and possibly other properties (like precedance for operators). The token objects are stored in array.
+1. We throw away whitespaces.
+1. We check for any unary operators and resolve them right away - e.g. `-5 * (-8)`
+1. We merge consequent single numbers and number dividers (like `.` or `,`) into complete numbers.
 
 We got tokenized array.
 
