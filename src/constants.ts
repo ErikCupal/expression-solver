@@ -150,32 +150,20 @@ export const NUMBER_DIVIDER_TOKENS: {
 
 // Token getters
 
-/**
- * Gets OperatorToken from OperatorTokens object
- */
 export const getOperatorToken = (value: string) =>
   Object.values(OPERATOR_TOKENS)
     .find(operatorToken => value === operatorToken.value) as OperatorToken
 
-/**
- * Gets ParenthesisToken from ParenthesisTokens object
- */
 export const getParenthesisToken = (value: string) =>
   Object.values(PARENTHESIS_TOKENS)
     .find(par => value === par.value) as ParenthesisToken
 
-/**
- * Gets NumberDividerToken from NumberDividerTokens object
- */
 export const getNumberDividerToken = (value: string) =>
   Object.values(NUMBER_DIVIDER_TOKENS)
     .find(par => value === par.value) as NumberDividerToken
 
 // Token type checkers
 
-/**
- * Checks whether the operator exists in OperatorTokens object
- */
 export const isOperator = (value: string) => {
   if (Object.values(OPERATOR_TOKENS)
     .find(operator => value === operator.value)) {
@@ -185,9 +173,6 @@ export const isOperator = (value: string) => {
   }
 }
 
-/**
- * Checks whether the parenthesis exists in ParenthesisTokens object
- */
 export const isParenthesis = (value: string) => {
   if (Object.values(PARENTHESIS_TOKENS)
     .find(par => value === par.value)) {
@@ -197,9 +182,6 @@ export const isParenthesis = (value: string) => {
   }
 }
 
-/**
- * Checks whether the number divider exists in NumberDividerTokens object
- */
 export const isNumberDivider = (value: string) => {
   if (Object.values(NUMBER_DIVIDER_TOKENS)
     .find(par => value === par.value)) {

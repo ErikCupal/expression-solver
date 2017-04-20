@@ -1778,34 +1778,22 @@ var NUMBER_DIVIDER_TOKENS = exports.NUMBER_DIVIDER_TOKENS = {
     }
 };
 // Token getters
-/**
- * Gets OperatorToken from OperatorTokens object
- */
 var getOperatorToken = exports.getOperatorToken = function getOperatorToken(value) {
     return Object.values(OPERATOR_TOKENS).find(function (operatorToken) {
         return value === operatorToken.value;
     });
 };
-/**
- * Gets ParenthesisToken from ParenthesisTokens object
- */
 var getParenthesisToken = exports.getParenthesisToken = function getParenthesisToken(value) {
     return Object.values(PARENTHESIS_TOKENS).find(function (par) {
         return value === par.value;
     });
 };
-/**
- * Gets NumberDividerToken from NumberDividerTokens object
- */
 var getNumberDividerToken = exports.getNumberDividerToken = function getNumberDividerToken(value) {
     return Object.values(NUMBER_DIVIDER_TOKENS).find(function (par) {
         return value === par.value;
     });
 };
 // Token type checkers
-/**
- * Checks whether the operator exists in OperatorTokens object
- */
 var isOperator = exports.isOperator = function isOperator(value) {
     if (Object.values(OPERATOR_TOKENS).find(function (operator) {
         return value === operator.value;
@@ -1815,9 +1803,6 @@ var isOperator = exports.isOperator = function isOperator(value) {
         return false;
     }
 };
-/**
- * Checks whether the parenthesis exists in ParenthesisTokens object
- */
 var isParenthesis = exports.isParenthesis = function isParenthesis(value) {
     if (Object.values(PARENTHESIS_TOKENS).find(function (par) {
         return value === par.value;
@@ -1827,9 +1812,6 @@ var isParenthesis = exports.isParenthesis = function isParenthesis(value) {
         return false;
     }
 };
-/**
- * Checks whether the number divider exists in NumberDividerTokens object
- */
 var isNumberDivider = exports.isNumberDivider = function isNumberDivider(value) {
     if (Object.values(NUMBER_DIVIDER_TOKENS).find(function (par) {
         return value === par.value;
@@ -4768,19 +4750,9 @@ var _attributes = __webpack_require__(123);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-/**
- * li, ul, p, div... functions create HTML in string format
- * They accept variable number of parameters - children
- * If the first parameter is array, it is considered as array of tag attributes.
- *
- * id, type, value... functions create HTML attributes, e.g id("container") => `id="container"`
- *
- * render method simply sets innerHTML of HTML element
- */
 // Initial render
 var page = (0, _html.div)((0, _html.h1)('Expression solver'), (0, _html.input)([(0, _attributes.id)('exprInput'), (0, _attributes.type)('text'), (0, _attributes.value)('')]), (0, _html.div)([(0, _attributes.id)('outputElement')]));
 (0, _html.render)(page, Dom.getById('root'));
-// Add event to input
 var inputElement = Dom.getById('exprInput');
 var outputElement = Dom.getById('outputElement');
 // tslint:disable-next-line:no-any
@@ -4950,13 +4922,8 @@ var createTree = exports.createTree = function createTree(postfixExpression) {
                     right: undefined
                 });
             case 'operator':
-                // In case the new token is operator
-                // 1) pop two nodes or leaves of the stack
-                // 2) create new node with the newToken as token and the two popped nodes (leaves) its leaves
-                // 3) push the new node on the stack
                 var y = stack.pop();
                 var x = stack.pop();
-                // Checks whether x and y exist
                 if (x && y) {
                     return (0, _lists.append)(stack, {
                         value: newToken,
@@ -5002,21 +4969,8 @@ var _tokenize = __webpack_require__(129);
 
 var _ramda = __webpack_require__(61);
 
-/**
- * Resolves the infix notation expression into abstraction syntax tree.
- *
- * The expression can contain operators and parentheses
- *
- * @param infixExpression An expression in infix notation
- * @returns Abstraction syntax tree
- */
-var createTreeFromExpression =
-/**
- * For explanation of the pipe function refer to
- *      Documentation in ./Lib/ExpressionSolver/Pipe
- *      Or better here :) http://vanslaars.io/post/create-pipe-function/
- */
-exports.createTreeFromExpression = (0, _ramda.pipe)(_tokenize.tokenize, _checkSyntax.checkSyntax, _postfix.postfix, _createTree.createTree);
+/** Resolves the infix notation expression into abstraction syntax tree. */
+var createTreeFromExpression = exports.createTreeFromExpression = (0, _ramda.pipe)(_tokenize.tokenize, _checkSyntax.checkSyntax, _postfix.postfix, _createTree.createTree);
 
 /***/ }),
 /* 123 */
@@ -5251,12 +5205,8 @@ var postfix = exports.postfix = function postfix(infixTokens) {
     /**
      * The algorith is described [here](https://en.wikipedia.org/wiki/Shunting-yard_algorithm).
      *
-     *
      * Takes stack of Tokens (array) and new token
-     *
      * Returns modified stack
-     *
-     * Read below how reduce function works :)
      */
     var reducer = function reducer(_ref7, a) {
         var _ref8 = _slicedToArray(_ref7, 2),
@@ -5298,7 +5248,6 @@ var postfix = exports.postfix = function postfix(infixTokens) {
             }
         }
     };
-    // Explanation of reduce function is in ./Lib/ExpressionSolver/CreateTree (end of the file)
     var stacks = infixTokens.reduce(reducer, [[], []]);
     return processSpecialTokensStack(stacks);
 };
@@ -5317,9 +5266,7 @@ exports.printTree = undefined;
 
 var _html = __webpack_require__(60);
 
-/**
- * Creates HTML unordered list tree from the abstraction syntax tree.
- */
+/** Creates HTML unordered list tree from the abstraction syntax tree. */
 var printTree = exports.printTree = function printTree(_ref) {
     var value = _ref.value,
         left = _ref.left,
@@ -5353,9 +5300,7 @@ var printTree = exports.printTree = function printTree(_ref) {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-/**
- * Solves an abstraction syntax tree.
- */
+/** Solves an abstraction syntax tree. */
 var solveTree = exports.solveTree = function solveTree(_ref) {
     var value = _ref.value,
         left = _ref.left,
@@ -5489,10 +5434,7 @@ var resolveUnaryOperators = function resolveUnaryOperators(array) {
 var mergeNumbers = function mergeNumbers(array) {
     /**
      * Takes stack of Tokens (array) and new token
-     *
      * Returns modified stack
-     *
-     * Read below how reduce function works :)
      */
     var mergeReducer = function mergeReducer(outputStack, newToken) {
         // Take first token from the stack
@@ -5552,10 +5494,8 @@ var mergeNumbers = function mergeNumbers(array) {
                         default:
                             switch (lastToken.decimalPlace !== undefined) {
                                 case true:
-                                    /**
-                                     * In case the number is decimal
-                                     *      shift the number by decimalPlace number
-                                     */
+                                    // In case the number is decimal
+                                    // shift the number by decimalPlace number
                                     return (0, _lists.prepend)(outputStack, newToken, {
                                         type: lastToken.type,
                                         value: lastToken.value * Math.pow(10, -lastToken.decimalPlace)
@@ -5594,10 +5534,8 @@ var mergeNumbers = function mergeNumbers(array) {
     var outputStack = array.reduce(mergeReducer, []);
     var lastToken = outputStack[0];
     if (lastToken && lastToken.type === 'number' && lastToken.decimalPlace !== undefined) {
-        /**
-         * In case the number is decimal
-         *      shift the number by decimalPlace number
-         */
+        // In case the number is decimal
+        // shift the number by decimalPlace number
         outputStack[0] = {
             type: lastToken.type,
             value: lastToken.value * Math.pow(10, -lastToken.decimalPlace)
@@ -5605,16 +5543,8 @@ var mergeNumbers = function mergeNumbers(array) {
     }
     return outputStack.reverse();
 };
-/**
- * Takes an expression. Returns tokenized expression.
- */
-var tokenize =
-/**
- * For explanation of the pipe function refer to
- *      Documentation in ./Lib/ExpressionSolver/Pipe
- *      Or better here :) http://vanslaars.io/post/create-pipe-function/
- */
-exports.tokenize = (0, _ramda.pipe)(tokenizeSingleChars, resolveUnaryOperators, mergeNumbers);
+/** Takes an expression. Returns tokenized expression. */
+var tokenize = exports.tokenize = (0, _ramda.pipe)(tokenizeSingleChars, resolveUnaryOperators, mergeNumbers);
 
 /***/ }),
 /* 130 */
