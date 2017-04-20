@@ -1,6 +1,6 @@
 export const htmlAttribute =
-    (attributeName: string) =>
-        (value: string) => `${attributeName}="${value}"`
+  (attributeName: string) =>
+    (value: string) => `${attributeName}="${value}"`
 
 export const id = htmlAttribute('id')
 export const className = htmlAttribute('class')

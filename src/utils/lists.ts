@@ -4,9 +4,9 @@
  * @param array The source array.
  */
 export const last = <T>(array: T[]): T | undefined =>
-    array
-        ? array[array.length - 1]
-        : undefined
+  array
+    ? array[array.length - 1]
+    : undefined
 
 /**
  * Takes array, appends element(s) at the end and returns the array
@@ -15,8 +15,8 @@ export const last = <T>(array: T[]): T | undefined =>
  * .
  */
 export const append = <T>(array: T[], ...elements: T[]): T[] => {
-    array.push(...elements)
-    return array
+  array.push(...elements)
+  return array
 }
 
 /**
@@ -26,6 +26,6 @@ export const append = <T>(array: T[], ...elements: T[]): T[] => {
  * .
  */
 export const prepend = <T>(array: T[], ...elements: T[]): T[] => {
-    array.unshift(...elements)
-    return array
+  array.unshift(...elements)
+  return array
 }
